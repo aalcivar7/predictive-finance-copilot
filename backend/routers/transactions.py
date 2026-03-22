@@ -8,7 +8,7 @@ from core.database import get_db
 from core.security import get_current_user
 from models.models import User, Transaction, IncomeStream
 from schemas.schemas import (
-    TransactionCreate, TransactionOut,
+    TransactionCreate, TransactionUpdate, TransactionOut,
     MonthSummary, CategoryTotal, TrendPoint,
 )
 
@@ -53,6 +53,29 @@ def create_transaction(
         date             = body.date or datetime.now(timezone.utc),
     )
     db.add(tx)
+    db.commit()
+    db.refresh(tx)
+    return tx
+
+
+@router.put("/{tx_id}", response_model=TransactionOut)
+def update_transaction(
+    tx_id: int,
+    body: TransactionUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    tx = db.query(Transaction).filter(
+        Transaction.id == tx_id,
+        Transaction.user_id == current_user.id,
+    ).first()
+    if not tx:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    if body.amount      is not None: tx.amount      = body.amount
+    if body.category    is not None: tx.category    = body.category
+    if body.description is not None: tx.description = body.description
+    if body.date        is not None: tx.date        = body.date
     db.commit()
     db.refresh(tx)
     return tx

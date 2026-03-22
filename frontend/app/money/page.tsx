@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { getIncomeStreams, createIncomeStream, updateIncomeStream, deleteIncomeStream, getTransactions, createTransaction, deleteTransaction, getMonthSummary, getSpendingTrends } from '@/lib/api';
+import { getIncomeStreams, createIncomeStream, updateIncomeStream, deleteIncomeStream, getTransactions, createTransaction, updateTransaction, deleteTransaction, getMonthSummary, getSpendingTrends } from '@/lib/api';
 import type { IncomeStreamsSummary, Transaction, MonthSummary, TrendPoint } from '@/types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
@@ -25,6 +25,12 @@ export default function MoneyPage() {
   const [incForm,setIncForm]     = useState({name:'',amount:'',stream_type:'active' as 'active'|'passive'|'investment'});
   const [expForm,setExpForm]     = useState({amount:'',category:'Food & Dining',description:'',date:new Date().toISOString().split('T')[0]});
   const [saving,setSaving]       = useState(false);
+  const [editingStream,setEditingStream] = useState<number|null>(null);
+  const [editStreamForm,setEditStreamForm] = useState({name:'',amount:'',stream_type:'active' as 'active'|'passive'|'investment'});
+  const [editingTx,setEditingTx] = useState<number|null>(null);
+  const [editTxForm,setEditTxForm] = useState({amount:'',category:'Food & Dining',description:'',date:''});
+  const [customCat,setCustomCat]     = useState('');
+  const [customEditCat,setCustomEditCat] = useState('');
 
   const load = useCallback(async()=>{
     const [i,s,t,tr] = await Promise.all([getIncomeStreams(), getMonthSummary(month), getTransactions({transaction_type:'expense',month}), getSpendingTrends(6)]);
@@ -34,10 +40,13 @@ export default function MoneyPage() {
   useEffect(()=>{ load(); },[load]);
 
   async function addIncome(e:React.FormEvent){ e.preventDefault(); setSaving(true); try{ await createIncomeStream({name:incForm.name,amount:parseFloat(incForm.amount),stream_type:incForm.stream_type}); setIncForm({name:'',amount:'',stream_type:'active'}); setShowIncForm(false); await load(); }finally{setSaving(false);} }
-  async function addExpense(e:React.FormEvent){ e.preventDefault(); setSaving(true); try{ await createTransaction({amount:parseFloat(expForm.amount),category:expForm.category,description:expForm.description||undefined,transaction_type:'expense',date:expForm.date?new Date(expForm.date).toISOString():undefined}); setExpForm({amount:'',category:'Food & Dining',description:'',date:new Date().toISOString().split('T')[0]}); setShowExpForm(false); await load(); }finally{setSaving(false);} }
+  async function addExpense(e:React.FormEvent){ e.preventDefault(); setSaving(true); const cat=expForm.category==='__custom__'?customCat.trim():expForm.category; if(!cat) return setSaving(false); try{ await createTransaction({amount:parseFloat(expForm.amount),category:cat,description:expForm.description||undefined,transaction_type:'expense',date:expForm.date?new Date(expForm.date).toISOString():undefined}); setExpForm({amount:'',category:'Food & Dining',description:'',date:new Date().toISOString().split('T')[0]}); setCustomCat(''); setShowExpForm(false); await load(); }finally{setSaving(false);} }
+  async function saveStream(e:React.FormEvent){ e.preventDefault(); if(!editingStream) return; setSaving(true); try{ await updateIncomeStream(editingStream,{name:editStreamForm.name,amount:parseFloat(editStreamForm.amount),stream_type:editStreamForm.stream_type}); setEditingStream(null); await load(); }finally{setSaving(false);} }
+  async function saveTx(e:React.FormEvent){ e.preventDefault(); if(!editingTx) return; setSaving(true); const cat=editTxForm.category==='__custom__'?customEditCat.trim():editTxForm.category; if(!cat) return setSaving(false); try{ await updateTransaction(editingTx,{amount:parseFloat(editTxForm.amount),category:cat,description:editTxForm.description||undefined,date:editTxForm.date?new Date(editTxForm.date).toISOString():undefined}); setEditingTx(null); await load(); }finally{setSaving(false);} }
 
   const netSavings = (income?.total_monthly??0) - (summary?.total_expenses??0);
   const pieData = summary?.by_category.map((c,i)=>({name:c.category,value:c.total,color:PIE_COLORS[i%PIE_COLORS.length]}))?? [];
+  const usedCustomCats = txs.map(t=>t.category).filter(c=>!CATEGORIES.includes(c)).filter((c,i,a)=>a.indexOf(c)===i);
 
   return (
     <ProtectedRoute>
@@ -106,19 +115,37 @@ export default function MoneyPage() {
                 {(['active','passive','investment'] as const).flatMap(t=>(income?.streams??[]).filter(s=>s.stream_type===t).map(s=>{
                   const cfg=TYPE_CFG[s.stream_type as keyof typeof TYPE_CFG];
                   return(
-                    <div key={s.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 12px',backgroundColor:s.is_active?cfg.bg:'#12121a',border:`1px solid ${s.is_active?cfg.border:'#22223a'}`,borderRadius:'10px',opacity:s.is_active?1:0.55}}>
-                      <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-                        <span style={{fontSize:'18px'}}>{cfg.emoji}</span>
-                        <div>
-                          <p style={{fontSize:'13px',fontWeight:600,color:'#e0e0f0'}}>{s.name}</p>
-                          <p style={{fontSize:'11px',color:'#50505e',textTransform:'capitalize'}}>{s.stream_type}</p>
+                    <div key={s.id} style={{display:'flex',flexDirection:'column',backgroundColor:s.is_active?cfg.bg:'#12121a',border:`1px solid ${s.is_active?cfg.border:'#22223a'}`,borderRadius:'10px',opacity:s.is_active?1:0.55}}>
+                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 12px'}}>
+                        <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                          <span style={{fontSize:'18px'}}>{cfg.emoji}</span>
+                          <div>
+                            <p style={{fontSize:'13px',fontWeight:600,color:'#e0e0f0'}}>{s.name}</p>
+                            <p style={{fontSize:'11px',color:'#50505e',textTransform:'capitalize'}}>{s.stream_type}</p>
+                          </div>
+                        </div>
+                        <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+                          <p style={{fontSize:'14px',fontWeight:700,color:cfg.color}}>{fmt(s.amount)}<span style={{fontSize:'10px',color:'#50505e'}}>/mo</span></p>
+                          <button onClick={()=>{ updateIncomeStream(s.id,{is_active:!s.is_active}).then(load); }} style={{background:s.is_active?'rgba(16,185,129,0.1)':'#22223a',border:`1px solid ${s.is_active?'rgba(16,185,129,0.25)':'#3a3a50'}`,color:s.is_active?'#34d399':'#60607a',borderRadius:'6px',padding:'3px 8px',cursor:'pointer',fontSize:'11px',fontWeight:600}}>{s.is_active?'Active':'Paused'}</button>
+                          <button onClick={()=>{ setEditingStream(s.id===editingStream?null:s.id); setEditStreamForm({name:s.name,amount:String(s.amount),stream_type:s.stream_type as typeof editStreamForm.stream_type}); }} style={{background:'rgba(99,102,241,0.1)',border:'1px solid rgba(99,102,241,0.25)',color:'#a78bfa',borderRadius:'6px',padding:'3px 7px',cursor:'pointer',fontSize:'12px'}}>✏️</button>
+                          <button onClick={()=>{ deleteIncomeStream(s.id).then(load); }} style={{background:'rgba(244,63,94,0.1)',border:'1px solid rgba(244,63,94,0.2)',color:'#f87171',borderRadius:'6px',padding:'3px 7px',cursor:'pointer',fontSize:'12px'}}>✕</button>
                         </div>
                       </div>
-                      <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
-                        <p style={{fontSize:'14px',fontWeight:700,color:cfg.color}}>{fmt(s.amount)}<span style={{fontSize:'10px',color:'#50505e'}}>/mo</span></p>
-                        <button onClick={()=>{ updateIncomeStream(s.id,{is_active:!s.is_active}).then(load); }} style={{background:s.is_active?'rgba(16,185,129,0.1)':'#22223a',border:`1px solid ${s.is_active?'rgba(16,185,129,0.25)':'#3a3a50'}`,color:s.is_active?'#34d399':'#60607a',borderRadius:'6px',padding:'3px 8px',cursor:'pointer',fontSize:'11px',fontWeight:600}}>{s.is_active?'Active':'Paused'}</button>
-                        <button onClick={()=>{ deleteIncomeStream(s.id).then(load); }} style={{background:'rgba(244,63,94,0.1)',border:'1px solid rgba(244,63,94,0.2)',color:'#f87171',borderRadius:'6px',padding:'3px 7px',cursor:'pointer',fontSize:'12px'}}>✕</button>
-                      </div>
+                      {editingStream===s.id&&(
+                        <form onSubmit={saveStream} style={{padding:'12px',borderTop:'1px solid #22223a',display:'flex',flexDirection:'column',gap:'8px'}}>
+                          <input className="input" value={editStreamForm.name} onChange={e=>setEditStreamForm({...editStreamForm,name:e.target.value})} required placeholder="Name" />
+                          <input type="number" className="input" value={editStreamForm.amount} onChange={e=>setEditStreamForm({...editStreamForm,amount:e.target.value})} required placeholder="Monthly amount ($)" />
+                          <select className="input" value={editStreamForm.stream_type} onChange={e=>setEditStreamForm({...editStreamForm,stream_type:e.target.value as typeof editStreamForm.stream_type})}>
+                            <option value="active">💼 Active</option>
+                            <option value="passive">🏠 Passive</option>
+                            <option value="investment">📈 Investment</option>
+                          </select>
+                          <div style={{display:'flex',gap:'8px'}}>
+                            <button type="submit" disabled={saving} className="btn-primary" style={{fontSize:'12px',flex:1}}>Save</button>
+                            <button type="button" onClick={()=>setEditingStream(null)} className="btn-secondary" style={{fontSize:'12px',flex:1}}>Cancel</button>
+                          </div>
+                        </form>
+                      )}
                     </div>
                   );
                 }))}
@@ -141,7 +168,12 @@ export default function MoneyPage() {
                 <form onSubmit={addExpense} style={{background:'#12121a',borderRadius:'12px',padding:'16px',marginBottom:'16px',border:'1px solid #22223a'}}>
                   <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
                     <input type="number" step="0.01" className="input" value={expForm.amount} onChange={e=>setExpForm({...expForm,amount:e.target.value})} required placeholder="Amount ($)" />
-                    <select className="input" value={expForm.category} onChange={e=>setExpForm({...expForm,category:e.target.value})}>{CATEGORIES.map(c=><option key={c} value={c}>{CAT_EMOJIS[c]} {c}</option>)}</select>
+                    <select className="input" value={expForm.category} onChange={e=>setExpForm({...expForm,category:e.target.value})}>
+                      {CATEGORIES.map(c=><option key={c} value={c}>{CAT_EMOJIS[c]} {c}</option>)}
+                      {usedCustomCats.length>0&&<optgroup label="── Custom ──">{usedCustomCats.map(c=><option key={c} value={c}>🏷️ {c}</option>)}</optgroup>}
+                      <option value="__custom__">＋ New custom category…</option>
+                    </select>
+                    {expForm.category==='__custom__'&&<input className="input" value={customCat} onChange={e=>setCustomCat(e.target.value)} required placeholder="Category name" autoFocus />}
                     <input type="date" className="input" value={expForm.date} onChange={e=>setExpForm({...expForm,date:e.target.value})} />
                     <input type="text" className="input" value={expForm.description} onChange={e=>setExpForm({...expForm,description:e.target.value})} placeholder="Description (optional)" />
                     <button type="submit" disabled={saving} className="btn-primary" style={{fontSize:'13px'}}>+ Add Expense</button>
@@ -202,21 +234,41 @@ export default function MoneyPage() {
           {txs.length===0?<p style={{textAlign:'center',color:'#50505e',fontSize:'13px',padding:'30px'}}>No expenses for {month}.</p>:(
             <div style={{display:'flex',flexDirection:'column',gap:'6px'}}>
               {txs.map(tx=>(
-                <div key={tx.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 12px',backgroundColor:'#12121a',borderRadius:'10px',border:'1px solid #22223a'}}>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-                    <div style={{width:'34px',height:'34px',borderRadius:'8px',backgroundColor:'#1e1430',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'15px'}}>{CAT_EMOJIS[tx.category]||'💰'}</div>
-                    <div>
-                      <p style={{fontSize:'13px',fontWeight:500,color:'#d0d0e0'}}>{tx.category}</p>
-                      {tx.description&&<p style={{fontSize:'11px',color:'#50505e'}}>{tx.description}</p>}
+                <div key={tx.id} style={{backgroundColor:'#12121a',borderRadius:'10px',border:'1px solid #22223a'}}>
+                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 12px'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                      <div style={{width:'34px',height:'34px',borderRadius:'8px',backgroundColor:'#1e1430',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'15px'}}>{CAT_EMOJIS[tx.category]||'💰'}</div>
+                      <div>
+                        <p style={{fontSize:'13px',fontWeight:500,color:'#d0d0e0'}}>{tx.category}</p>
+                        {tx.description&&<p style={{fontSize:'11px',color:'#50505e'}}>{tx.description}</p>}
+                      </div>
+                    </div>
+                    <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                      <div style={{textAlign:'right'}}>
+                        <p style={{fontSize:'13px',fontWeight:600,color:'#f87171'}}>-{fmt(tx.amount)}</p>
+                        <p style={{fontSize:'11px',color:'#50505e'}}>{new Date(tx.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</p>
+                      </div>
+                      <button onClick={()=>{ setEditingTx(tx.id===editingTx?null:tx.id); setEditTxForm({amount:String(tx.amount),category:tx.category,description:tx.description||'',date:tx.date.slice(0,10)}); }} style={{background:'rgba(99,102,241,0.1)',border:'1px solid rgba(99,102,241,0.25)',color:'#a78bfa',borderRadius:'6px',padding:'4px 7px',cursor:'pointer',fontSize:'12px'}}>✏️</button>
+                      <button onClick={()=>deleteTransaction(tx.id).then(load)} style={{background:'rgba(244,63,94,0.1)',border:'1px solid rgba(244,63,94,0.2)',color:'#f87171',borderRadius:'6px',padding:'4px 7px',cursor:'pointer',fontSize:'12px'}}>✕</button>
                     </div>
                   </div>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-                    <div style={{textAlign:'right'}}>
-                      <p style={{fontSize:'13px',fontWeight:600,color:'#f87171'}}>-{fmt(tx.amount)}</p>
-                      <p style={{fontSize:'11px',color:'#50505e'}}>{new Date(tx.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</p>
-                    </div>
-                    <button onClick={()=>deleteTransaction(tx.id).then(load)} style={{background:'rgba(244,63,94,0.1)',border:'1px solid rgba(244,63,94,0.2)',color:'#f87171',borderRadius:'6px',padding:'4px 7px',cursor:'pointer',fontSize:'12px'}}>✕</button>
-                  </div>
+                  {editingTx===tx.id&&(
+                    <form onSubmit={saveTx} style={{padding:'12px',borderTop:'1px solid #22223a',display:'flex',flexDirection:'column',gap:'8px'}}>
+                      <input type="number" step="0.01" className="input" value={editTxForm.amount} onChange={e=>setEditTxForm({...editTxForm,amount:e.target.value})} required placeholder="Amount ($)" />
+                      <select className="input" value={editTxForm.category} onChange={e=>setEditTxForm({...editTxForm,category:e.target.value})}>
+                        {CATEGORIES.map(c=><option key={c} value={c}>{CAT_EMOJIS[c]} {c}</option>)}
+                        {usedCustomCats.length>0&&<optgroup label="── Custom ──">{usedCustomCats.map(c=><option key={c} value={c}>🏷️ {c}</option>)}</optgroup>}
+                        <option value="__custom__">＋ New custom category…</option>
+                      </select>
+                      {editTxForm.category==='__custom__'&&<input className="input" value={customEditCat} onChange={e=>setCustomEditCat(e.target.value)} required placeholder="Category name" autoFocus />}
+                      <input type="date" className="input" value={editTxForm.date} onChange={e=>setEditTxForm({...editTxForm,date:e.target.value})} />
+                      <input type="text" className="input" value={editTxForm.description} onChange={e=>setEditTxForm({...editTxForm,description:e.target.value})} placeholder="Description (optional)" />
+                      <div style={{display:'flex',gap:'8px'}}>
+                        <button type="submit" disabled={saving} className="btn-primary" style={{fontSize:'12px',flex:1}}>Save</button>
+                        <button type="button" onClick={()=>setEditingTx(null)} className="btn-secondary" style={{fontSize:'12px',flex:1}}>Cancel</button>
+                      </div>
+                    </form>
+                  )}
                 </div>
               ))}
             </div>

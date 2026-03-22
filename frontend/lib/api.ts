@@ -55,6 +55,7 @@ export const getInsights = async () => (await api.get('/insights')).data as { in
 export const getTransactions = async (params?: { transaction_type?: string; month?: string }) =>
   (await api.get('/transactions', { params })).data as Transaction[];
 export const createTransaction = async (body: TransactionCreate) => (await api.post('/transactions', body)).data as Transaction;
+export const updateTransaction = async (id: number, body: Partial<TransactionCreate>) => (await api.put(`/transactions/${id}`, body)).data as Transaction;
 export const deleteTransaction = async (id: number) => { await api.delete(`/transactions/${id}`); };
 export const getMonthSummary  = async (month?: string) => (await api.get('/transactions/summary', { params: month ? { month } : {} })).data as MonthSummary;
 export const getSpendingTrends = async (months = 6) => (await api.get('/transactions/trends', { params: { months } })).data as TrendPoint[];

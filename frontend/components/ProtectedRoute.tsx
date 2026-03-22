@@ -6,29 +6,28 @@ import Navbar from './Navbar';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
+  const [auth] = useState(() => isAuthenticated());
+  const [ready, setReady] = useState(auth);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!auth) {
       router.replace('/login');
     } else {
       setReady(true);
     }
-  }, [router]);
+  }, [auth, router]);
 
-  if (!ready) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0f0f14' }}>
-        <div style={{ textAlign: 'center', color: '#60607a', fontSize: '14px' }}>Loading…</div>
-      </div>
-    );
-  }
+  if (!auth) return null;
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0f0f14' }}>
       <Navbar />
       <main style={{ flex: 1, padding: '28px 24px', overflowY: 'auto', paddingBottom: '80px' }}>
-        {children}
+        {ready ? children : (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#60607a', fontSize: '14px' }}>
+            Loading…
+          </div>
+        )}
       </main>
     </div>
   );

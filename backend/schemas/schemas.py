@@ -140,6 +140,12 @@ class TransactionCreate(BaseModel):
     transaction_type: str
     date:             Optional[datetime] = None
 
+class TransactionUpdate(BaseModel):
+    amount:      Optional[float]    = None
+    category:    Optional[str]      = None
+    description: Optional[str]      = None
+    date:        Optional[datetime] = None
+
 class TransactionOut(BaseModel):
     id:               int
     amount:           float

@@ -126,12 +126,6 @@ export default function WealthPage() {
     setNwHistory(fresh);
   };
 
-  if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
-      <div style={{ fontSize: 16, color: '#9999bb' }}>Loading wealth data…</div>
-    </div>
-  );
-
   const card: React.CSSProperties = {
     background: '#1a1a24', borderRadius: 16, padding: '24px',
     border: '1px solid #2a2a3a',
@@ -148,6 +142,12 @@ export default function WealthPage() {
   return (
     <ProtectedRoute>
     <div style={{ padding: '0 0 40px' }}>
+      {loading && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+          <div style={{ fontSize: 16, color: '#9999bb' }}>Loading wealth data…</div>
+        </div>
+      )}
+      {!loading && <>
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 800, color: '#f0f0f5', margin: 0 }}>Wealth & Wellness</h1>
@@ -511,6 +511,7 @@ export default function WealthPage() {
           )}
         </div>
       )}
+      </>}
     </div>
     </ProtectedRoute>
   );
