@@ -57,7 +57,7 @@ export default function MoneyPage() {
         </div>
 
         {/* Summary bar */}
-        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'12px',marginBottom:'24px'}}>
+        <div className="grid-4" style={{marginBottom:'24px'}}>
           {[
             {label:'Monthly Income',   value:fmt(income?.total_monthly??0),  color:'#34d399',bg:'#0f2420',border:'#1a4035'},
             {label:'Monthly Expenses', value:fmt(summary?.total_expenses??0),color:'#f87171',bg:'#241414',border:'#4a2020'},
@@ -72,7 +72,7 @@ export default function MoneyPage() {
         </div>
 
         {/* Two-column grid */}
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px',marginBottom:'20px'}}>
+        <div className="grid-2" style={{marginBottom:'20px'}}>
 
           {/* LEFT: Income */}
           <div style={{display:'flex',flexDirection:'column',gap:'16px'}}>
@@ -98,7 +98,7 @@ export default function MoneyPage() {
               )}
 
               {/* Mini totals */}
-              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'8px',marginBottom:'16px'}}>
+              <div className="grid-3" style={{marginBottom:'16px'}}>
                 {(['active','passive','investment'] as const).map(t=>{
                   const cfg=TYPE_CFG[t]; const streams=(income?.streams??[]).filter(s=>s.stream_type===t);
                   const tot=streams.filter(s=>s.is_active).reduce((a,s)=>a+s.amount,0);

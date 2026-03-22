@@ -127,7 +127,7 @@ export default function PlanPage() {
               <button onClick={()=>setShowDF(!showDF)} className={showDF?'btn-secondary':'btn-primary'}>{showDF?'✕ Cancel':'+ Add Debt'}</button>
             }/>
             {debts.length>0&&(
-              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'12px',marginBottom:'20px'}}>
+              <div className="grid-3" style={{marginBottom:'20px'}}>
                 {[{label:'Total Debt',value:fmt(totalDebt),color:'#f87171',bg:'#241414',border:'#4a2020'},{label:'Min. Payments/mo',value:fmt(totalMinPay),color:'#fbbf24',bg:'#241e10',border:'#4a3a18'},{label:'# of Debts',value:String(debts.length),color:'#a78bfa',bg:'#1e1430',border:'#2d1f55'}].map(({label,value,color,bg,border})=>(
                   <div key={label} style={{backgroundColor:bg,border:`1px solid ${border}`,borderRadius:'14px',padding:'16px'}}>
                     <p style={{fontSize:'11px',fontWeight:600,letterSpacing:'0.07em',textTransform:'uppercase',color:'#60607a',marginBottom:'6px'}}>{label}</p>
@@ -183,7 +183,7 @@ export default function PlanPage() {
                         )}
                       </div>
                     </div>
-                    <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'12px',marginBottom:'14px'}}>
+                    <div className="grid-3" style={{marginBottom:'14px'}}>
                       {[{l:'Interest Rate',v:`${(d.interest_rate*100).toFixed(2)}%`},{l:'Min. Payment',v:fmt(d.minimum_payment)+'/mo'},{l:'Payoff',v:d.months_to_payoff?`~${d.months_to_payoff} months`:'⚠️ Unpayable'}].map(({l,v})=>(
                         <div key={l} style={{background:'rgba(0,0,0,0.2)',borderRadius:'8px',padding:'10px'}}>
                           <p style={{fontSize:'10px',color:'#60607a',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.06em'}}>{l}</p>
@@ -209,7 +209,7 @@ export default function PlanPage() {
               <button onClick={()=>setShowBiF(!showBiF)} className={showBiF?'btn-secondary':'btn-primary'}>{showBiF?'✕ Cancel':'+ Add Bill'}</button>
             }/>
             {bills.length>0&&(
-              <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'12px',marginBottom:'20px'}}>
+              <div className="grid-2" style={{marginBottom:'20px'}}>
                 {[{label:'Active Bills/mo',value:fmt(totalBills),color:'#a78bfa',bg:'#1e1430',border:'#2d1f55'},{label:'Active Bills',value:String(bills.filter(b=>b.is_active).length),color:'#34d399',bg:'#0f2420',border:'#1a4035'}].map(({label,value,color,bg,border})=>(
                   <div key={label} style={{backgroundColor:bg,border:`1px solid ${border}`,borderRadius:'14px',padding:'16px'}}>
                     <p style={{fontSize:'11px',fontWeight:600,letterSpacing:'0.07em',textTransform:'uppercase',color:'#60607a',marginBottom:'6px'}}>{label}</p>

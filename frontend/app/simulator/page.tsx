@@ -78,7 +78,7 @@ export default function SimulatorPage() {
         {/* Results */}
         {result && (
           <div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '16px' }}>
+            <div className="grid-3" style={{ marginBottom: '16px' }}>
               {[
                 { label: 'Projected Net Worth', value: fmt(result.final_net_worth),                                                              color: '#a78bfa', bg: '#1e1430', border: '#2d1f55' },
                 { label: 'Total Contributed',   value: fmt(result.total_contributed),                                                            color: '#34d399', bg: '#0f2420', border: '#1a4035' },

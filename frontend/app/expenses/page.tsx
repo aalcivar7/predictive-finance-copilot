@@ -131,7 +131,7 @@ export default function ExpensesPage() {
 
         {/* Summary cards */}
         {summary && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
+          <div className="grid-3" style={{ marginBottom: '20px' }}>
             {[
               { label: 'Total Spent',  value: fmt(summary.total_expenses), color: '#f87171', bg: '#241414', border: '#4a2020' },
               { label: 'Total Income', value: fmt(summary.total_income),   color: '#34d399', bg: '#0f2420', border: '#1a4035' },

@@ -31,13 +31,16 @@ export default function Navbar() {
       {/* ── Desktop sidebar ─────────────────────── */}
       <aside style={{
         width: '220px',
-        minHeight: '100vh',
+        height: '100vh',
+        position: 'sticky',
+        top: 0,
         backgroundColor: colors.bgSidebar,
         borderRight: `1px solid ${colors.borderSubtle}`,
         display: 'flex',
         flexDirection: 'column',
         padding: '24px 12px',
         flexShrink: 0,
+        overflow: 'hidden',
       }} className="hidden-mobile">
 
         {/* Brand */}
@@ -55,7 +58,7 @@ export default function Navbar() {
         </div>
 
         {/* Nav links */}
-        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', overflowY: 'auto', minHeight: 0 }}>
           {navItems.map(({ href, label, emoji }) => {
             const active = pathname === href;
             return (
@@ -137,7 +140,7 @@ export default function Navbar() {
         backgroundColor: colors.bgSidebar,
         borderTop: `1px solid ${colors.borderSubtle}`,
         display: 'flex',
-        padding: '8px 0 12px',
+        padding: '8px 6px 12px',
       }} className="show-mobile">
         {navItems.map(({ href, label, emoji }) => {
           const active = pathname === href;
