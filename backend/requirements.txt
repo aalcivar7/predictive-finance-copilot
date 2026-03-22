@@ -8,4 +8,5 @@ python-multipart>=0.0.12
 pydantic[email]>=2.10.0
 pydantic-settings>=2.6.0
 numpy>=2.2.0
+python-dateutil>=2.9.0
 python-dotenv>=1.0.1
