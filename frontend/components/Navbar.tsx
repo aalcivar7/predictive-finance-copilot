@@ -139,81 +139,78 @@ export default function Navbar() {
         position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
         backgroundColor: colors.bgSidebar,
         borderTop: `1px solid ${colors.borderSubtle}`,
-        display: 'flex',
-        padding: '8px 6px 12px',
-        overflowX: 'auto',
-        WebkitOverflowScrolling: 'touch' as any,
-        scrollbarWidth: 'none' as any,
       }} className="show-mobile">
-        {navItems.map(({ href, label, emoji }) => {
-          const active = pathname === href;
-          return (
-            <Link key={href} href={href} style={{
-              minWidth: '64px', flexShrink: 0,
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-              padding: '4px 2px', textDecoration: 'none',
-              color: active ? '#a78bfa' : colors.textDim,
+        <div className="mobile-nav-scroll">
+          {navItems.map(({ href, label, emoji }) => {
+            const active = pathname === href;
+            return (
+              <Link key={href} href={href} style={{
+                minWidth: '64px', flexShrink: 0,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+                padding: '8px 2px 12px', textDecoration: 'none',
+                color: active ? '#a78bfa' : colors.textDim,
+              }}>
+                <div style={{
+                  fontSize: '22px', lineHeight: 1,
+                  padding: '5px 10px', borderRadius: '10px',
+                  backgroundColor: active ? '#2a1f4a' : 'transparent',
+                  transition: 'background-color 0.15s',
+                }}>{emoji}</div>
+                <span style={{ fontSize: '10px', fontWeight: active ? 600 : 400 }}>{label}</span>
+              </Link>
+            );
+          })}
+
+          {/* Theme picker — mobile */}
+          <div style={{ position: 'relative', minWidth: '64px', flexShrink: 0 }}>
+            <button onClick={() => setShowThemePicker(v => !v)} style={{
+              width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+              padding: '8px 2px 12px', background: 'none', border: 'none', cursor: 'pointer',
+              color: showThemePicker ? '#a78bfa' : colors.textDim,
             }}>
               <div style={{
-                fontSize: '22px', lineHeight: 1,
-                padding: '5px 10px', borderRadius: '10px',
-                backgroundColor: active ? '#2a1f4a' : 'transparent',
+                fontSize: '22px', lineHeight: 1, padding: '5px 10px', borderRadius: '10px',
+                backgroundColor: showThemePicker ? '#2a1f4a' : 'transparent',
                 transition: 'background-color 0.15s',
-              }}>{emoji}</div>
-              <span style={{ fontSize: '10px', fontWeight: active ? 600 : 400 }}>{label}</span>
-            </Link>
-          );
-        })}
+              }}>🎨</div>
+              <span style={{ fontSize: '10px' }}>Theme</span>
+            </button>
+            {showThemePicker && (
+              <div style={{
+                position: 'fixed', bottom: '72px', right: '8px',
+                backgroundColor: colors.bgCard, border: `1px solid ${colors.border}`,
+                borderRadius: '12px', padding: '8px',
+                display: 'flex', flexDirection: 'column', gap: '2px',
+                zIndex: 200, minWidth: '140px',
+                boxShadow: '0 -4px 24px rgba(0,0,0,0.3)',
+              }}>
+                {THEMES.map(t => (
+                  <button key={t.id} onClick={() => { setTheme(t.id); setShowThemePicker(false); }} style={{
+                    display: 'flex', alignItems: 'center', gap: '10px',
+                    padding: '9px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                    fontSize: '13px', fontWeight: theme === t.id ? 700 : 500,
+                    background: theme === t.id ? '#2a1f4a' : 'transparent',
+                    color: theme === t.id ? '#c4b5fd' : colors.textSecondary,
+                    width: '100%', textAlign: 'left',
+                  }}>
+                    <span>{t.emoji}</span> {t.label}
+                    {theme === t.id && <span style={{ marginLeft: 'auto', fontSize: '11px' }}>✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-        {/* Theme picker — mobile */}
-        <div style={{ position: 'relative', minWidth: '64px', flexShrink: 0 }}>
-          <button onClick={() => setShowThemePicker(v => !v)} style={{
-            width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-            padding: '4px 2px', background: 'none', border: 'none', cursor: 'pointer',
-            color: showThemePicker ? '#a78bfa' : colors.textDim,
+          <button onClick={handleLogout} style={{
+            minWidth: '64px', flexShrink: 0,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+            padding: '8px 2px 12px', background: 'none', border: 'none', cursor: 'pointer',
+            color: colors.textDim,
           }}>
-            <div style={{
-              fontSize: '22px', lineHeight: 1, padding: '5px 10px', borderRadius: '10px',
-              backgroundColor: showThemePicker ? '#2a1f4a' : 'transparent',
-              transition: 'background-color 0.15s',
-            }}>🎨</div>
-            <span style={{ fontSize: '10px' }}>Theme</span>
+            <div style={{ fontSize: '22px', lineHeight: 1, padding: '5px 10px', borderRadius: '10px' }}>🚪</div>
+            <span style={{ fontSize: '10px' }}>Sign out</span>
           </button>
-          {showThemePicker && (
-            <div style={{
-              position: 'fixed', bottom: '72px', right: '8px',
-              backgroundColor: colors.bgCard, border: `1px solid ${colors.border}`,
-              borderRadius: '12px', padding: '8px',
-              display: 'flex', flexDirection: 'column', gap: '2px',
-              zIndex: 200, minWidth: '140px',
-              boxShadow: '0 -4px 24px rgba(0,0,0,0.3)',
-            }}>
-              {THEMES.map(t => (
-                <button key={t.id} onClick={() => { setTheme(t.id); setShowThemePicker(false); }} style={{
-                  display: 'flex', alignItems: 'center', gap: '10px',
-                  padding: '9px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                  fontSize: '13px', fontWeight: theme === t.id ? 700 : 500,
-                  background: theme === t.id ? '#2a1f4a' : 'transparent',
-                  color: theme === t.id ? '#c4b5fd' : colors.textSecondary,
-                  width: '100%', textAlign: 'left',
-                }}>
-                  <span>{t.emoji}</span> {t.label}
-                  {theme === t.id && <span style={{ marginLeft: 'auto', fontSize: '11px' }}>✓</span>}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
-
-        <button onClick={handleLogout} style={{
-          minWidth: '64px', flexShrink: 0,
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-          padding: '4px 2px', background: 'none', border: 'none', cursor: 'pointer',
-          color: colors.textDim,
-        }}>
-          <div style={{ fontSize: '22px', lineHeight: 1, padding: '5px 10px', borderRadius: '10px' }}>🚪</div>
-          <span style={{ fontSize: '10px' }}>Sign out</span>
-        </button>
       </nav>
 
       <style>{`
@@ -221,9 +218,16 @@ export default function Navbar() {
         .show-mobile   { display: none !important; }
         @media (max-width: 768px) {
           .hidden-mobile { display: none !important; }
-          .show-mobile   { display: flex !important; }
+          .show-mobile   { display: block !important; }
         }
-        .show-mobile::-webkit-scrollbar { display: none; }
+        .mobile-nav-scroll {
+          display: flex;
+          flex-direction: row;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+        }
+        .mobile-nav-scroll::-webkit-scrollbar { display: none; }
       `}</style>
     </>
   );
