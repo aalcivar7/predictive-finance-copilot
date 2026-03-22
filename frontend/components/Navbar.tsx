@@ -140,8 +140,10 @@ export default function Navbar() {
         backgroundColor: colors.bgSidebar,
         borderTop: `1px solid ${colors.borderSubtle}`,
         display: 'flex', flexDirection: 'row',
-        padding: '6px 0 10px',
+        paddingTop: '6px',
+        paddingBottom: 'env(safe-area-inset-bottom, 10px)',
         width: '100%',
+        boxSizing: 'border-box',
       }} className="show-mobile">
 
         {navItems.map(({ href, label, emoji }) => {

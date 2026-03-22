@@ -32,6 +32,9 @@ export default function LoginPage() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backgroundColor: colors.bg }}>
+      <style>{`
+        .login-field::placeholder { color: #a0a0cc !important; font-style: italic !important; opacity: 1 !important; }
+      `}</style>
       <div style={{ width: '100%', maxWidth: '400px' }}>
 
         {/* Header */}
@@ -63,7 +66,7 @@ export default function LoginPage() {
               <label className="label">Username or Email</label>
               <input
                 type="text"
-                className="input"
+                className="input login-field"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
@@ -76,7 +79,7 @@ export default function LoginPage() {
               <div style={{ position: 'relative' }}>
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  className="input"
+                  className="input login-field"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
