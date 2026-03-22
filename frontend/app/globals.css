@@ -162,7 +162,7 @@ body {
   font-family: inherit;
   -webkit-text-fill-color: var(--text);
 }
-.input::placeholder { color: var(--text-muted); opacity: 1; font-style: italic; }
+.input::placeholder { color: var(--text-secondary); opacity: 1; font-style: italic; }
 .input:focus {
   border-color: #7c3aed;
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
