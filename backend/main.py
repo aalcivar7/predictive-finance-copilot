@@ -6,6 +6,13 @@ from routers import auth, dashboard, simulate, goals, insights, transactions, in
 
 Base.metadata.create_all(bind=engine)
 
+# ── Migrations ─────────────────────────────────────────────────────────────────
+from sqlalchemy import text
+with engine.connect() as _conn:
+    _conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR UNIQUE"))
+    _conn.execute(text("ALTER TABLE users ALTER COLUMN email DROP NOT NULL"))
+    _conn.commit()
+
 app = FastAPI(title="Predictive Finance Copilot API", version="2.0.0")
 
 app.add_middleware(

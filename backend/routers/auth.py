@@ -11,18 +11,27 @@ router = APIRouter()
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
-    if db.query(User).filter(User.email == user_in.email).first():
+    username = (user_in.username or "").strip()
+    email    = (user_in.email or "").strip() or None
+
+    if not username:
+        raise HTTPException(status_code=400, detail="Username is required")
+
+    if db.query(User).filter(User.username == username).first():
+        raise HTTPException(status_code=400, detail="Username already taken")
+
+    if email and db.query(User).filter(User.email == email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
 
     user = User(
-        email=user_in.email,
-        hashed_password=get_password_hash(user_in.password),
-        full_name=user_in.full_name,
+        username        = username,
+        email           = email,
+        hashed_password = get_password_hash(user_in.password),
+        full_name       = user_in.full_name,
     )
     db.add(user)
     db.flush()
 
-    # Create empty financial profile
     profile = FinancialProfile(user_id=user.id)
     db.add(profile)
     db.commit()
@@ -32,14 +41,23 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == form_data.username).first()
+    identifier = form_data.username.strip()
+
+    # Try username first, then email
+    user = db.query(User).filter(User.username == identifier).first()
+    if not user:
+        user = db.query(User).filter(User.email == identifier).first()
+
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
+            detail="Incorrect username/email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    token = create_access_token(data={"sub": user.email})
+
+    # Use username if available, else email as token subject
+    subject = user.username or user.email
+    token = create_access_token(data={"sub": subject})
     return {"access_token": token, "token_type": "bearer"}
 
 

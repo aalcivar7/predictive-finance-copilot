@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { ThemeProvider } from '@/lib/theme-context';
 
 export const metadata: Metadata = {
   title: 'FinCopilot — Predictive Finance',
@@ -19,9 +20,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <link rel="apple-touch-icon" href="/icon-192.png" />
+        {/* Prevent theme flash on load */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function(){
+            var t = localStorage.getItem('fin-theme');
+            if(t) document.documentElement.setAttribute('data-theme', t);
+          })();
+        `}} />
       </head>
       <body className="min-h-screen antialiased">
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

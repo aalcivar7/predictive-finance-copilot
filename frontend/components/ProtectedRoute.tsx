@@ -2,10 +2,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { isAuthenticated } from '@/lib/auth';
+import { useTheme } from '@/lib/theme-context';
 import Navbar from './Navbar';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const { colors } = useTheme();
   const [auth] = useState(() => isAuthenticated());
   const [ready, setReady] = useState(auth);
 
@@ -20,11 +22,11 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   if (!auth) return null;
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0f0f14' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: colors.bg }}>
       <Navbar />
-      <main style={{ flex: 1, padding: '28px 24px', overflowY: 'auto', paddingBottom: '80px' }}>
+      <main style={{ flex: 1, padding: '28px 24px', overflowY: 'auto', overflowX: 'hidden', paddingBottom: '80px', maxWidth: '100%' }}>
         {ready ? children : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#60607a', fontSize: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: colors.textMuted, fontSize: '14px' }}>
             Loading…
           </div>
         )}

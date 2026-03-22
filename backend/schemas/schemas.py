@@ -6,7 +6,8 @@ from datetime import datetime
 # ── Auth ───────────────────────────────────────────────────────────────────────
 
 class UserCreate(BaseModel):
-    email:     EmailStr
+    email:     Optional[str] = None   # kept for legacy, username takes precedence
+    username:  Optional[str] = None
     password:  str
     full_name: Optional[str] = None
 
@@ -20,7 +21,8 @@ class Token(BaseModel):
 
 class UserOut(BaseModel):
     id:         int
-    email:      str
+    username:   Optional[str]
+    email:      Optional[str]
     full_name:  Optional[str]
     created_at: datetime
 
