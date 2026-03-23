@@ -145,27 +145,38 @@ export default function Navbar() {
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         backgroundColor: colors.bgSidebar,
         borderBottom: `1px solid ${colors.borderSubtle}`,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 16px', height: '52px',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        boxShadow: '0 1px 12px rgba(0,0,0,0.2)',
       }} className="show-mobile">
-        <button onClick={() => setMobileOpen(true)} style={{
-          background: 'none', border: 'none', cursor: 'pointer',
-          display: 'flex', flexDirection: 'column', gap: '5px', padding: '6px',
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 20px', height: '56px',
         }}>
-          <span style={{ display: 'block', width: '22px', height: '2px', backgroundColor: colors.text, borderRadius: '2px' }} />
-          <span style={{ display: 'block', width: '22px', height: '2px', backgroundColor: colors.text, borderRadius: '2px' }} />
-          <span style={{ display: 'block', width: '22px', height: '2px', backgroundColor: colors.text, borderRadius: '2px' }} />
-        </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
-            width: '26px', height: '26px', borderRadius: '6px',
-            background: 'linear-gradient(135deg,#7c3aed,#9333ea)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#fff', fontWeight: 800, fontSize: '12px',
-          }}>F</div>
-          <span style={{ color: colors.text, fontWeight: 700, fontSize: '15px' }}>FinCopilot</span>
+          {/* Hamburger */}
+          <button onClick={() => setMobileOpen(true)} style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            display: 'flex', flexDirection: 'column', gap: '5px', padding: '8px',
+            borderRadius: '8px',
+          }}>
+            <span style={{ display: 'block', width: '20px', height: '2px', backgroundColor: colors.text, borderRadius: '2px' }} />
+            <span style={{ display: 'block', width: '16px', height: '2px', backgroundColor: colors.text, borderRadius: '2px' }} />
+            <span style={{ display: 'block', width: '20px', height: '2px', backgroundColor: colors.text, borderRadius: '2px' }} />
+          </button>
+
+          {/* Brand */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{
+              width: '28px', height: '28px', borderRadius: '7px',
+              background: 'linear-gradient(135deg,#7c3aed,#9333ea)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#fff', fontWeight: 800, fontSize: '13px',
+            }}>F</div>
+            <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px', letterSpacing: '-0.3px' }}>FinCopilot</span>
+          </div>
+
+          {/* Spacer to balance hamburger */}
+          <div style={{ width: '36px' }} />
         </div>
-        <div style={{ width: '34px' }} />
       </div>
 
       {/* ── Mobile drawer ────────────────────────── */}
@@ -180,11 +191,12 @@ export default function Navbar() {
           {/* Drawer */}
           <div style={{
             position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 200,
-            width: '260px', backgroundColor: colors.bgSidebar,
+            width: '270px', backgroundColor: colors.bgSidebar,
             display: 'flex', flexDirection: 'column',
             overflowY: 'auto',
-            padding: '24px 12px',
-            boxShadow: '4px 0 24px rgba(0,0,0,0.4)',
+            paddingTop: 'env(safe-area-inset-top, 0px)',
+            paddingLeft: '12px', paddingRight: '12px', paddingBottom: '24px',
+            boxShadow: '4px 0 32px rgba(0,0,0,0.5)',
           }} className="show-mobile">
 
             {/* Drawer brand + close */}

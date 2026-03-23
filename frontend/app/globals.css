@@ -239,7 +239,7 @@ main, aside, nav {
   max-width: 100%;
 }
 @media (max-width: 768px) {
-  .main-content { padding-top: 68px !important; }
+  .main-content { padding-top: calc(56px + env(safe-area-inset-top, 0px) + 16px) !important; }
 }
 
 /* ── Responsive grid utilities ────────────────────────────── */
