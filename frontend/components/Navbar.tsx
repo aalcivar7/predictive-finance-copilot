@@ -141,14 +141,8 @@ export default function Navbar() {
         borderTop: `1px solid ${colors.borderSubtle}`,
         paddingBottom: 'env(safe-area-inset-bottom, 8px)',
       }} className="show-mobile">
-        <div style={{
-          display: 'flex', flexDirection: 'row',
-          overflowX: 'scroll',
-          WebkitOverflowScrolling: 'touch' as any,
-          msOverflowStyle: 'none' as any,
-          scrollbarWidth: 'none' as any,
-          padding: '6px 4px 8px',
-        }}>
+        <div className="mob-scroll">
+
 
           {navItems.map(({ href, label, emoji }) => {
             const active = pathname === href;
@@ -231,7 +225,16 @@ export default function Navbar() {
           .hidden-mobile { display: none !important; }
           .show-mobile   { display: block !important; }
         }
-        .show-mobile > div::-webkit-scrollbar { display: none; }
+        .mob-scroll {
+          display: flex;
+          flex-direction: row;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          touch-action: pan-x;
+          scrollbar-width: none;
+          padding: 6px 4px 8px;
+        }
+        .mob-scroll::-webkit-scrollbar { display: none; }
       `}</style>
     </>
   );
