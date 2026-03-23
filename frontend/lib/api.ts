@@ -27,8 +27,8 @@ api.interceptors.response.use(
 );
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
-export const register = async (email: string, password: string, full_name?: string) =>
-  (await api.post('/auth/register', { email, password, full_name })).data as User;
+export const register = async (username: string, password: string, full_name?: string) =>
+  (await api.post('/auth/register', { username, password, full_name })).data as User;
 export const login = async (email: string, password: string) => {
   const p = new URLSearchParams(); p.append('username', email); p.append('password', password);
   return (await api.post('/auth/login', p, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })).data as { access_token: string; token_type: string };
