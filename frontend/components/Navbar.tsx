@@ -20,10 +20,16 @@ export default function Navbar() {
   const router   = useRouter();
   const { colors, theme, setTheme } = useTheme();
   const [showThemePicker, setShowThemePicker] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   function handleLogout() {
     removeToken();
     router.push('/login');
+  }
+
+  function handleMobileNav(href: string) {
+    setMobileOpen(false);
+    router.push(href);
   }
 
   return (
@@ -134,107 +140,138 @@ export default function Navbar() {
         </div>
       </aside>
 
-      {/* ── Mobile bottom nav ───────────────────── */}
-      <nav style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
+      {/* ── Mobile top bar ───────────────────────── */}
+      <div style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         backgroundColor: colors.bgSidebar,
-        borderTop: `1px solid ${colors.borderSubtle}`,
-        paddingBottom: 'env(safe-area-inset-bottom, 8px)',
+        borderBottom: `1px solid ${colors.borderSubtle}`,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 16px', height: '52px',
       }} className="show-mobile">
-        <div className="mob-scroll">
-
-
-          {navItems.map(({ href, label, emoji }) => {
-            const active = pathname === href;
-            return (
-              <Link key={href} href={href} style={{
-                minWidth: '72px', flexShrink: 0,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-                padding: '4px 4px', textDecoration: 'none',
-                color: active ? '#a78bfa' : colors.textDim,
-              }}>
-                <div style={{
-                  fontSize: '26px', lineHeight: 1,
-                  padding: '5px 12px', borderRadius: '10px',
-                  backgroundColor: active ? '#2a1f4a' : 'transparent',
-                  transition: 'background-color 0.15s',
-                }}>{emoji}</div>
-                <span style={{ fontSize: '11px', fontWeight: active ? 600 : 400 }}>{label}</span>
-              </Link>
-            );
-          })}
-
-          {/* Theme picker */}
-          <div style={{ minWidth: '72px', flexShrink: 0, position: 'relative' }}>
-            <button onClick={() => setShowThemePicker(v => !v)} style={{
-              width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-              padding: '4px 4px', background: 'none', border: 'none', cursor: 'pointer',
-              color: showThemePicker ? '#a78bfa' : colors.textDim,
-            }}>
-              <div style={{
-                fontSize: '26px', lineHeight: 1, padding: '5px 12px', borderRadius: '10px',
-                backgroundColor: showThemePicker ? '#2a1f4a' : 'transparent',
-                transition: 'background-color 0.15s',
-              }}>🎨</div>
-              <span style={{ fontSize: '11px' }}>Theme</span>
-            </button>
-            {showThemePicker && (
-              <div style={{
-                position: 'fixed', bottom: '90px', right: '8px',
-                backgroundColor: colors.bgCard, border: `1px solid ${colors.border}`,
-                borderRadius: '12px', padding: '8px',
-                display: 'flex', flexDirection: 'column', gap: '2px',
-                zIndex: 200, minWidth: '150px',
-                boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
-              }}>
-                {THEMES.map(t => (
-                  <button key={t.id} onClick={() => { setTheme(t.id); setShowThemePicker(false); }} style={{
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                    padding: '9px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                    fontSize: '13px', fontWeight: theme === t.id ? 700 : 500,
-                    background: theme === t.id ? '#2a1f4a' : 'transparent',
-                    color: theme === t.id ? '#c4b5fd' : colors.textSecondary,
-                    width: '100%', textAlign: 'left',
-                  }}>
-                    <span>{t.emoji}</span> {t.label}
-                    {theme === t.id && <span style={{ marginLeft: 'auto', fontSize: '11px' }}>✓</span>}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Logout */}
-          <button onClick={handleLogout} style={{
-            minWidth: '72px', flexShrink: 0,
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-            padding: '4px 4px', background: 'none', border: 'none', cursor: 'pointer',
-            color: colors.textDim,
-          }}>
-            <div style={{ fontSize: '26px', lineHeight: 1, padding: '5px 12px', borderRadius: '10px' }}>🚪</div>
-            <span style={{ fontSize: '11px' }}>Sign out</span>
-          </button>
-
+        <button onClick={() => setMobileOpen(true)} style={{
+          background: 'none', border: 'none', cursor: 'pointer',
+          display: 'flex', flexDirection: 'column', gap: '5px', padding: '6px',
+        }}>
+          <span style={{ display: 'block', width: '22px', height: '2px', backgroundColor: colors.text, borderRadius: '2px' }} />
+          <span style={{ display: 'block', width: '22px', height: '2px', backgroundColor: colors.text, borderRadius: '2px' }} />
+          <span style={{ display: 'block', width: '22px', height: '2px', backgroundColor: colors.text, borderRadius: '2px' }} />
+        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{
+            width: '26px', height: '26px', borderRadius: '6px',
+            background: 'linear-gradient(135deg,#7c3aed,#9333ea)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#fff', fontWeight: 800, fontSize: '12px',
+          }}>F</div>
+          <span style={{ color: colors.text, fontWeight: 700, fontSize: '15px' }}>FinCopilot</span>
         </div>
-      </nav>
+        <div style={{ width: '34px' }} />
+      </div>
+
+      {/* ── Mobile drawer ────────────────────────── */}
+      {mobileOpen && (
+        <>
+          {/* Backdrop */}
+          <div onClick={() => setMobileOpen(false)} style={{
+            position: 'fixed', inset: 0, zIndex: 150,
+            backgroundColor: 'rgba(0,0,0,0.55)',
+          }} className="show-mobile" />
+
+          {/* Drawer */}
+          <div style={{
+            position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 200,
+            width: '260px', backgroundColor: colors.bgSidebar,
+            display: 'flex', flexDirection: 'column',
+            overflowY: 'auto',
+            padding: '24px 12px',
+            boxShadow: '4px 0 24px rgba(0,0,0,0.4)',
+          }} className="show-mobile">
+
+            {/* Drawer brand + close */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px', padding: '0 8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '32px', height: '32px', borderRadius: '8px',
+                  background: 'linear-gradient(135deg,#7c3aed,#9333ea)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#fff', fontWeight: 800, fontSize: '14px',
+                }}>F</div>
+                <div>
+                  <div style={{ color: colors.text, fontWeight: 700, fontSize: '15px', lineHeight: 1.2 }}>FinCopilot</div>
+                  <div style={{ color: colors.textDim, fontSize: '11px', marginTop: '2px' }}>Finance AI</div>
+                </div>
+              </div>
+              <button onClick={() => setMobileOpen(false)} style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: colors.textMuted, fontSize: '20px', lineHeight: 1, padding: '4px',
+              }}>✕</button>
+            </div>
+
+            {/* Nav links */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+              {navItems.map(({ href, label, emoji }) => {
+                const active = pathname === href;
+                return (
+                  <button key={href} onClick={() => handleMobileNav(href)} style={{
+                    display: 'flex', alignItems: 'center', gap: '12px',
+                    padding: '12px 14px', borderRadius: '10px',
+                    fontSize: '15px', fontWeight: active ? 600 : 500,
+                    backgroundColor: active ? '#2a1f4a' : 'transparent',
+                    color: active ? '#c4b5fd' : colors.textMuted,
+                    border: active ? '1px solid #4c3a8a' : '1px solid transparent',
+                    cursor: 'pointer', width: '100%', textAlign: 'left',
+                    transition: 'all 0.15s',
+                  }}>
+                    <span style={{ fontSize: '20px' }}>{emoji}</span>
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Theme picker */}
+            <div style={{ borderTop: `1px solid ${colors.borderSubtle}`, paddingTop: '12px', marginTop: '12px' }}>
+              <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: colors.textDim, padding: '0 14px', marginBottom: '8px' }}>Theme</p>
+              {THEMES.map(t => (
+                <button key={t.id} onClick={() => setTheme(t.id)} style={{
+                  display: 'flex', alignItems: 'center', gap: '12px',
+                  padding: '11px 14px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+                  fontSize: '15px', fontWeight: theme === t.id ? 700 : 500,
+                  background: theme === t.id ? '#2a1f4a' : 'transparent',
+                  color: theme === t.id ? '#c4b5fd' : colors.textMuted,
+                  width: '100%', textAlign: 'left',
+                }}>
+                  <span style={{ fontSize: '18px' }}>{t.emoji}</span> {t.label}
+                  {theme === t.id && <span style={{ marginLeft: 'auto', color: '#a78bfa' }}>✓</span>}
+                </button>
+              ))}
+            </div>
+
+            {/* Logout */}
+            <div style={{ borderTop: `1px solid ${colors.borderSubtle}`, paddingTop: '12px', marginTop: '8px' }}>
+              <button onClick={handleLogout} style={{
+                display: 'flex', alignItems: 'center', gap: '12px',
+                padding: '12px 14px', borderRadius: '10px',
+                fontSize: '15px', fontWeight: 500,
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: '#f87171', width: '100%', textAlign: 'left',
+              }}>
+                <span style={{ fontSize: '20px' }}>🚪</span>
+                Sign out
+              </button>
+            </div>
+
+          </div>
+        </>
+      )}
 
       <style>{`
         .hidden-mobile { display: flex !important; }
         .show-mobile   { display: none !important; }
         @media (max-width: 768px) {
           .hidden-mobile { display: none !important; }
-          .show-mobile   { display: block !important; }
+          .show-mobile   { display: flex !important; }
         }
-        .mob-scroll {
-          display: flex;
-          flex-direction: row;
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          touch-action: pan-x;
-          scrollbar-width: none;
-          padding: 6px 4px 8px;
-        }
-        .mob-scroll::-webkit-scrollbar { display: none; }
       `}</style>
     </>
   );

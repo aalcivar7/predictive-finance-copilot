@@ -24,7 +24,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: colors.bg }}>
       <Navbar />
-      <main style={{ flex: 1, padding: '28px 24px', overflowY: 'auto', overflowX: 'hidden', paddingBottom: '80px', maxWidth: '100%' }}>
+      <main style={{ flex: 1, padding: '28px 24px', overflowY: 'auto', overflowX: 'hidden', maxWidth: '100%' }} className="main-content">
         {ready ? children : (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: colors.textMuted, fontSize: '14px' }}>
             Loading…

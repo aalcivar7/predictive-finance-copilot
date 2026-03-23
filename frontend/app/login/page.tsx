@@ -32,10 +32,6 @@ export default function LoginPage() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backgroundColor: colors.bg }}>
-      <style>{`
-        #login-user::placeholder { color: #c084fc !important; font-style: italic !important; font-size: 13px !important; opacity: 1 !important; }
-        #login-pass::placeholder { color: #c084fc !important; font-style: italic !important; font-size: 13px !important; opacity: 1 !important; }
-      `}</style>
       <div style={{ width: '100%', maxWidth: '400px' }}>
 
         {/* Header */}
@@ -72,7 +68,6 @@ export default function LoginPage() {
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
-                placeholder="e.g. johndoe or john@mail.com"
               />
             </div>
 
@@ -86,7 +81,6 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  placeholder="••••••••"
                   style={{ paddingRight: '44px' }}
                 />
                 <button

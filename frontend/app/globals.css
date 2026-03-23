@@ -238,6 +238,9 @@ input:-webkit-autofill:focus {
 main, aside, nav {
   max-width: 100%;
 }
+@media (max-width: 768px) {
+  .main-content { padding-top: 68px !important; }
+}
 
 /* ── Responsive grid utilities ────────────────────────────── */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
