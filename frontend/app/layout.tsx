@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/lib/theme-context';
+import { LanguageProvider } from '@/lib/lang-context';
 
 export const metadata: Metadata = {
   title: 'FinCopilot — Predictive Finance',
@@ -33,7 +34,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen antialiased">
         <ThemeProvider>
-          {children}
+          <LanguageProvider>
+            {children}
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

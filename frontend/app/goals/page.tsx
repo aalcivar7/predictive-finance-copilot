@@ -4,8 +4,10 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import GoalCard from '@/components/goals/GoalCard';
 import { getGoals, createGoal, updateGoal, deleteGoal } from '@/lib/api';
 import type { Goal } from '@/types';
+import { useLang } from '@/lib/lang-context';
 
 export default function GoalsPage() {
+  const { t } = useLang();
   const [goals, setGoals]       = useState<Goal[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading]   = useState(false);
@@ -35,39 +37,39 @@ export default function GoalsPage() {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
           <div>
-            <h1 style={{ fontSize: '20px', fontWeight: 700, color: '#f0f0f5' }}>Goals</h1>
-            <p style={{ fontSize: '13px', color: '#60607a', marginTop: '2px' }}>Track your financial milestones</p>
+            <h1 style={{ fontSize: '20px', fontWeight: 700, color: '#f0f0f5' }}>{t('goals.title')}</h1>
+            <p style={{ fontSize: '13px', color: '#60607a', marginTop: '2px' }}>{t('goals.subtitle')}</p>
           </div>
           <button onClick={() => setShowForm(!showForm)} className={showForm ? 'btn-secondary' : 'btn-primary'}>
-            {showForm ? '✕ Cancel' : '+ Add Goal'}
+            {showForm ? t('goals.cancelGoal') : t('goals.addGoal')}
           </button>
         </div>
 
         {/* Form */}
         {showForm && (
           <div className="card" style={{ marginBottom: '24px', padding: '24px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#f0f0f5', marginBottom: '16px' }}>New Goal</h2>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#f0f0f5', marginBottom: '16px' }}>{t('goals.newGoal')}</h2>
             <form onSubmit={handleCreate}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px', marginBottom: '18px' }}>
                 <div>
-                  <label className="label">Goal Name</label>
-                  <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required placeholder="Emergency Fund" />
+                  <label className="label">{t('goals.goalName')}</label>
+                  <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required placeholder={t('goals.placeholder')} />
                 </div>
                 <div>
-                  <label className="label">Target ($)</label>
+                  <label className="label">{t('goals.target')}</label>
                   <input type="number" className="input" value={form.target_amount} onChange={(e) => setForm({ ...form, target_amount: e.target.value })} required min={1} placeholder="10000" />
                 </div>
                 <div>
-                  <label className="label">Saved so far ($)</label>
+                  <label className="label">{t('goals.current')}</label>
                   <input type="number" className="input" value={form.current_amount} onChange={(e) => setForm({ ...form, current_amount: e.target.value })} min={0} placeholder="0" />
                 </div>
                 <div>
-                  <label className="label">Target Date (opt.)</label>
+                  <label className="label">{t('goals.targetDate')}</label>
                   <input type="date" className="input" value={form.target_date} onChange={(e) => setForm({ ...form, target_date: e.target.value })} />
                 </div>
               </div>
               <button type="submit" disabled={loading} className="btn-primary">
-                {loading ? 'Creating…' : '+ Create Goal'}
+                {loading ? t('common.loading') : t('goals.create')}
               </button>
             </form>
           </div>
@@ -86,7 +88,7 @@ export default function GoalsPage() {
         {/* Active */}
         {active.length > 0 && (
           <div style={{ marginBottom: '24px' }}>
-            <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#50505e', marginBottom: '12px' }}>Active · {active.length}</p>
+            <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#50505e', marginBottom: '12px' }}>{t('goals.activeGoals')} · {active.length}</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
               {active.map((g) => <GoalCard key={g.id} goal={g} onDelete={async (id) => { await deleteGoal(id); load(); }} onComplete={async (id) => { await updateGoal(id, { is_completed: true }); load(); }} />)}
             </div>
@@ -96,7 +98,7 @@ export default function GoalsPage() {
         {/* Completed */}
         {completed.length > 0 && (
           <div>
-            <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#50505e', marginBottom: '12px' }}>Completed · {completed.length}</p>
+            <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#50505e', marginBottom: '12px' }}>{t('goals.completed')} · {completed.length}</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
               {completed.map((g) => <GoalCard key={g.id} goal={g} onDelete={async (id) => { await deleteGoal(id); load(); }} onComplete={async (id) => { await updateGoal(id, { is_completed: true }); load(); }} />)}
             </div>

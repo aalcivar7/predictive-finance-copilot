@@ -10,6 +10,7 @@ import {
 } from '@/lib/api';
 import type { HealthScore, RetirementProjection, TaxEstimate, NetWorthHistoryOut, NetWorthSnapshotCreate } from '@/types';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { useLang } from '@/lib/lang-context';
 
 const fmt = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 const pct = (n: number) => `${n.toFixed(1)}%`;
@@ -63,6 +64,7 @@ const TABS = ['Health', 'Net Worth', 'Retirement', 'Taxes'] as const;
 type Tab = typeof TABS[number];
 
 export default function WealthPage() {
+  const { t } = useLang();
   const [tab, setTab] = useState<Tab>('Health');
   const [health, setHealth] = useState<HealthScore | null>(null);
   const [nwHistory, setNwHistory] = useState<NetWorthHistoryOut | null>(null);
@@ -144,26 +146,34 @@ export default function WealthPage() {
     <div style={{ padding: '0 0 40px' }}>
       {loading && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
-          <div style={{ fontSize: 16, color: '#9999bb' }}>Loading wealth data…</div>
+          <div style={{ fontSize: 16, color: '#9999bb' }}>{t('wealth.loading')}</div>
         </div>
       )}
       {!loading && <>
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 800, color: '#f0f0f5', margin: 0 }}>Wealth & Wellness</h1>
-        <p style={{ color: '#9999bb', marginTop: 6, fontSize: 14 }}>Your complete financial health picture</p>
+        <h1 style={{ fontSize: 26, fontWeight: 800, color: '#f0f0f5', margin: 0 }}>{t('wealth.title')}</h1>
+        <p style={{ color: '#9999bb', marginTop: 6, fontSize: 14 }}>{t('wealth.subtitle')}</p>
       </div>
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 28, flexWrap: 'wrap' }}>
-        {TABS.map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{
-            padding: '9px 22px', borderRadius: 10, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600,
-            background: tab === t ? '#6366f1' : '#1a1a24',
-            color: tab === t ? '#fff' : '#9999bb',
-            transition: 'all 0.2s',
-          }}>{t}</button>
-        ))}
+        {TABS.map(tabKey => {
+          const tabLabels: Record<Tab, string> = {
+            Health: t('wealth.tabHealth'),
+            'Net Worth': t('wealth.tabNetWorth'),
+            Retirement: t('wealth.tabRetirement'),
+            Taxes: t('wealth.tabTaxes'),
+          };
+          return (
+            <button key={tabKey} onClick={() => setTab(tabKey)} style={{
+              padding: '9px 22px', borderRadius: 10, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600,
+              background: tab === tabKey ? '#6366f1' : '#1a1a24',
+              color: tab === tabKey ? '#fff' : '#9999bb',
+              transition: 'all 0.2s',
+            }}>{tabLabels[tabKey]}</button>
+          );
+        })}
       </div>
 
       {/* ── HEALTH TAB ── */}
@@ -173,24 +183,24 @@ export default function WealthPage() {
           <div style={{ ...card, display: 'flex', gap: 48, alignItems: 'center', flexWrap: 'wrap', marginBottom: 24 }}>
             <ScoreRing score={health.score} label={health.label} color={health.color} />
             <div style={{ flex: 1, minWidth: 260 }}>
-              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#f0f0f5', marginBottom: 6 }}>Financial Health Score</h2>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#f0f0f5', marginBottom: 6 }}>{t('wealth.healthScoreTitle')}</h2>
               <p style={{ color: '#9999bb', fontSize: 13, marginBottom: 20 }}>
-                Scored across 4 key pillars, each worth up to 25 points.
+                {t('wealth.healthScoreSubtitle')}
               </p>
-              <SubBar label="Savings Rate" value={health.savings_score} />
-              <SubBar label="Debt-to-Income Ratio" value={health.debt_score} />
-              <SubBar label="Emergency Fund Coverage" value={health.emergency_score} />
-              <SubBar label="Budget Adherence" value={health.budget_score} />
+              <SubBar label={t('wealth.savingsRate')} value={health.savings_score} />
+              <SubBar label={t('wealth.debtRatio')} value={health.debt_score} />
+              <SubBar label={t('wealth.emergencyFund')} value={health.emergency_score} />
+              <SubBar label={t('wealth.budgetAdherence')} value={health.budget_score} />
             </div>
           </div>
 
           {/* Score breakdown cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             {[
-              { label: 'Savings Score', val: health.savings_score, tip: 'Based on your monthly savings rate vs income.' },
-              { label: 'Debt Score', val: health.debt_score, tip: 'Lower debt-to-income earns higher points.' },
-              { label: 'Emergency Fund', val: health.emergency_score, tip: '3–6 months expenses = full score.' },
-              { label: 'Budget Score', val: health.budget_score, tip: 'Staying within budgets earns full points.' },
+              { label: t('wealth.savingsScore'), val: health.savings_score, tip: t('wealth.savingsScoreTip') },
+              { label: t('wealth.debtScore'), val: health.debt_score, tip: t('wealth.debtScoreTip') },
+              { label: t('wealth.emergencyScore'), val: health.emergency_score, tip: t('wealth.emergencyScoreTip') },
+              { label: t('wealth.budgetScore'), val: health.budget_score, tip: t('wealth.budgetScoreTip') },
             ].map(({ label, val, tip }) => {
               const col = val >= 20 ? '#22c55e' : val >= 12 ? '#eab308' : '#ef4444';
               return (
@@ -212,10 +222,10 @@ export default function WealthPage() {
           {nwHistory && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 24 }}>
               {[
-                { label: '30-Day Change', val: nwHistory.change_30d, signed: true },
-                { label: 'YTD Change', val: nwHistory.change_ytd, signed: true },
-                { label: 'Latest Snapshot', val: snapshots[0]?.net_worth ?? 0, signed: false },
-                { label: 'Total Snapshots', val: snapshots.length, signed: false, isMoney: false },
+                { label: t('wealth.change30d'), val: nwHistory.change_30d, signed: true },
+                { label: t('wealth.changeYTD'), val: nwHistory.change_ytd, signed: true },
+                { label: t('wealth.latestSnapshot'), val: snapshots[0]?.net_worth ?? 0, signed: false },
+                { label: t('wealth.totalSnapshots'), val: snapshots.length, signed: false, isMoney: false },
               ].map(({ label, val, signed, isMoney = true }) => {
                 const col = signed ? (val >= 0 ? '#22c55e' : '#ef4444') : '#6366f1';
                 return (
@@ -233,7 +243,7 @@ export default function WealthPage() {
           {/* Chart */}
           {chartData.length > 1 && (
             <div style={{ ...card, marginBottom: 24 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#f0f0f5', marginBottom: 20 }}>Net Worth Over Time</h3>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#f0f0f5', marginBottom: 20 }}>{t('wealth.nwOverTime')}</h3>
               <ResponsiveContainer width="100%" height={260}>
                 <AreaChart data={chartData}>
                   <defs>
@@ -257,31 +267,31 @@ export default function WealthPage() {
           {/* Add snapshot */}
           <div style={{ ...card, marginBottom: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: showNwForm ? 20 : 0 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>Snapshots</h3>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>{t('wealth.snapshots')}</h3>
               <button onClick={() => setShowNwForm(v => !v)} style={{
                 background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8,
                 padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-              }}>{showNwForm ? 'Cancel' : '+ Add Snapshot'}</button>
+              }}>{showNwForm ? t('wealth.cancelSnapshot') : t('wealth.addSnapshot')}</button>
             </div>
             {showNwForm && (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
                 <div>
-                  <label style={{ fontSize: 12, color: '#9999bb', display: 'block', marginBottom: 4 }}>Total Assets ($)</label>
+                  <label style={{ fontSize: 12, color: '#9999bb', display: 'block', marginBottom: 4 }}>{t('wealth.totalAssets')}</label>
                   <input className="input" type="number" value={nwAssets} onChange={e => setNwAssets(e.target.value)} placeholder="250000" />
                 </div>
                 <div>
-                  <label style={{ fontSize: 12, color: '#9999bb', display: 'block', marginBottom: 4 }}>Total Liabilities ($)</label>
+                  <label style={{ fontSize: 12, color: '#9999bb', display: 'block', marginBottom: 4 }}>{t('wealth.totalLiabilities')}</label>
                   <input className="input" type="number" value={nwLiab} onChange={e => setNwLiab(e.target.value)} placeholder="80000" />
                 </div>
                 <div>
-                  <label style={{ fontSize: 12, color: '#9999bb', display: 'block', marginBottom: 4 }}>Date</label>
+                  <label style={{ fontSize: 12, color: '#9999bb', display: 'block', marginBottom: 4 }}>{t('wealth.date')}</label>
                   <input className="input" type="date" value={nwDate} onChange={e => setNwDate(e.target.value)} />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                   <button onClick={handleAddSnapshot} disabled={nwSaving} style={{
                     width: '100%', background: '#22c55e', color: '#fff', border: 'none',
                     borderRadius: 8, padding: '10px', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                  }}>{nwSaving ? 'Saving…' : 'Save'}</button>
+                  }}>{nwSaving ? t('wealth.saving') : t('wealth.save')}</button>
                 </div>
               </div>
             )}
@@ -293,7 +303,7 @@ export default function WealthPage() {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid #2a2a3a' }}>
-                    {['Date', 'Assets', 'Liabilities', 'Net Worth', ''].map(h => (
+                    {[t('wealth.tableDate'), t('wealth.tableAssets'), t('wealth.tableLiabilities'), t('wealth.tableNetWorth'), ''].map(h => (
                       <th key={h} style={{ textAlign: 'left', padding: '8px 12px', color: '#9999bb', fontWeight: 600, fontSize: 11, textTransform: 'uppercase' }}>{h}</th>
                     ))}
                   </tr>
@@ -309,7 +319,7 @@ export default function WealthPage() {
                         <button onClick={() => handleDeleteSnapshot(s.id)} style={{
                           background: 'transparent', border: '1px solid #3a2a2a', color: '#ef4444',
                           borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer',
-                        }}>Delete</button>
+                        }}>{t('wealth.deleteSnapshot')}</button>
                       </td>
                     </tr>
                   ))}
@@ -318,7 +328,7 @@ export default function WealthPage() {
             </div>
           )}
           {snapshots.length === 0 && !showNwForm && (
-            <div style={{ textAlign: 'center', color: '#9999bb', padding: 40 }}>No snapshots yet. Add your first one above.</div>
+            <div style={{ textAlign: 'center', color: '#9999bb', padding: 40 }}>{t('wealth.noSnapshots')}</div>
           )}
         </div>
       )}
@@ -329,7 +339,7 @@ export default function WealthPage() {
           {/* Controls */}
           <div style={{ ...card, marginBottom: 24, display: 'flex', gap: 24, alignItems: 'flex-end', flexWrap: 'wrap' }}>
             <div>
-              <label style={{ fontSize: 12, color: '#9999bb', display: 'block', marginBottom: 6 }}>Your Current Age</label>
+              <label style={{ fontSize: 12, color: '#9999bb', display: 'block', marginBottom: 6 }}>{t('wealth.currentAge')}</label>
               <input
                 className="input" type="number" min={18} max={64} value={currentAge}
                 onChange={e => setCurrentAge(+e.target.value)}
@@ -339,7 +349,7 @@ export default function WealthPage() {
             <button onClick={loadRetirement} disabled={retLoading} style={{
               background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8,
               padding: '10px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-            }}>{retLoading ? 'Calculating…' : 'Recalculate'}</button>
+            }}>{retLoading ? t('wealth.calculating') : t('wealth.recalculate')}</button>
           </div>
 
           {retirement && !retLoading && (
@@ -354,12 +364,12 @@ export default function WealthPage() {
                 <div style={{ fontSize: 40 }}>{retirement.on_track ? '✅' : '⚠️'}</div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 18, color: retirement.on_track ? '#22c55e' : '#ef4444' }}>
-                    {retirement.on_track ? 'You\'re on track for retirement!' : 'Retirement gap detected'}
+                    {retirement.on_track ? t('wealth.onTrackBanner') : t('wealth.gapBanner')}
                   </div>
                   <div style={{ color: '#9999bb', fontSize: 13, marginTop: 4 }}>
                     {retirement.on_track
-                      ? `At current savings you'll exceed your target nest egg by ${fmt(retirement.projected_at_65 - retirement.target_nest_egg)}.`
-                      : `You need ${fmt(retirement.monthly_needed - 0)}/mo more to close a ${fmt(retirement.shortfall)} shortfall.`}
+                      ? t('wealth.onTrackMsg').replace('{amount}', fmt(retirement.projected_at_65 - retirement.target_nest_egg))
+                      : t('wealth.gapMsg').replace('{monthly}', fmt(retirement.monthly_needed)).replace('{shortfall}', fmt(retirement.shortfall))}
                   </div>
                 </div>
               </div>
@@ -367,12 +377,12 @@ export default function WealthPage() {
               {/* Stats grid */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 24 }}>
                 {[
-                  { label: 'Target Nest Egg', val: fmt(retirement.target_nest_egg), color: '#6366f1' },
-                  { label: 'Projected at 65', val: fmt(retirement.projected_at_65), color: retirement.on_track ? '#22c55e' : '#f97316' },
-                  { label: 'Years to Retirement', val: `${retirement.years_to_retirement} yrs`, color: '#eab308' },
-                  { label: 'Assumed Return', val: pct(retirement.annual_return_used * 100), color: '#06b6d4' },
-                  { label: 'Monthly Needed', val: fmt(retirement.monthly_needed), color: '#a78bfa' },
-                  { label: 'Shortfall', val: retirement.shortfall > 0 ? fmt(retirement.shortfall) : 'None', color: retirement.shortfall > 0 ? '#ef4444' : '#22c55e' },
+                  { label: t('wealth.targetNestEgg'), val: fmt(retirement.target_nest_egg), color: '#6366f1' },
+                  { label: t('wealth.projectedAt65'), val: fmt(retirement.projected_at_65), color: retirement.on_track ? '#22c55e' : '#f97316' },
+                  { label: t('wealth.yearsToRetirement'), val: `${retirement.years_to_retirement} yrs`, color: '#eab308' },
+                  { label: t('wealth.assumedReturn'), val: pct(retirement.annual_return_used * 100), color: '#06b6d4' },
+                  { label: t('wealth.monthlyNeeded'), val: fmt(retirement.monthly_needed), color: '#a78bfa' },
+                  { label: t('wealth.shortfall'), val: retirement.shortfall > 0 ? fmt(retirement.shortfall) : t('wealth.noShortfall'), color: retirement.shortfall > 0 ? '#ef4444' : '#22c55e' },
                 ].map(({ label, val, color }) => (
                   <div key={label} style={{ ...card }}>
                     <div style={{ fontSize: 11, color: '#9999bb', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
@@ -383,9 +393,9 @@ export default function WealthPage() {
 
               {/* Progress bar: projected vs target */}
               <div style={{ ...card }}>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', marginBottom: 16 }}>Retirement Progress</h3>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', marginBottom: 16 }}>{t('wealth.retirementProgress')}</h3>
                 <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 13, color: '#9999bb' }}>Projected vs Target</span>
+                  <span style={{ fontSize: 13, color: '#9999bb' }}>{t('wealth.projectedVsTarget')}</span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: '#6366f1' }}>
                     {Math.min((retirement.projected_at_65 / retirement.target_nest_egg) * 100, 100).toFixed(0)}%
                   </span>
@@ -403,13 +413,13 @@ export default function WealthPage() {
                   <span style={{ fontSize: 11, color: '#555577' }}>{fmt(retirement.target_nest_egg)}</span>
                 </div>
                 <p style={{ fontSize: 12, color: '#666688', marginTop: 16, lineHeight: 1.6 }}>
-                  * Based on 4% safe withdrawal rule targeting 80% income replacement. Return rate: {pct(retirement.annual_return_used * 100)} annually.
+                  {t('wealth.retirementNote').replace('{rate}', pct(retirement.annual_return_used * 100))}
                 </p>
               </div>
             </>
           )}
           {retLoading && (
-            <div style={{ textAlign: 'center', padding: 60, color: '#9999bb' }}>Calculating your retirement projection…</div>
+            <div style={{ textAlign: 'center', padding: 60, color: '#9999bb' }}>{t('wealth.calculatingRetirement')}</div>
           )}
         </div>
       )}
@@ -420,21 +430,21 @@ export default function WealthPage() {
           {/* Controls */}
           <div style={{ ...card, marginBottom: 24, display: 'flex', gap: 24, alignItems: 'flex-end', flexWrap: 'wrap' }}>
             <div>
-              <label style={{ fontSize: 12, color: '#9999bb', display: 'block', marginBottom: 6 }}>Filing Status</label>
+              <label style={{ fontSize: 12, color: '#9999bb', display: 'block', marginBottom: 6 }}>{t('wealth.filingStatus')}</label>
               <div style={{ display: 'flex', gap: 8 }}>
                 {(['single', 'married_jointly'] as const).map(s => (
                   <button key={s} onClick={() => setFilingStatus(s)} style={{
                     padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600,
                     background: filingStatus === s ? '#6366f1' : '#2a2a3a',
                     color: filingStatus === s ? '#fff' : '#9999bb',
-                  }}>{s === 'single' ? 'Single' : 'Married (Joint)'}</button>
+                  }}>{s === 'single' ? t('wealth.single') : t('wealth.marriedJoint')}</button>
                 ))}
               </div>
             </div>
             <button onClick={loadTax} disabled={taxLoading} style={{
               background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8,
               padding: '10px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-            }}>{taxLoading ? 'Calculating…' : 'Recalculate'}</button>
+            }}>{taxLoading ? t('wealth.calculating') : t('wealth.recalculate')}</button>
           </div>
 
           {tax && !taxLoading && (
@@ -442,13 +452,13 @@ export default function WealthPage() {
               {/* Summary cards */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 24 }}>
                 {[
-                  { label: 'Gross Annual Income', val: fmt(tax.gross_annual), color: '#22c55e' },
-                  { label: 'Standard Deduction', val: fmt(tax.standard_deduction), color: '#6366f1' },
-                  { label: 'Taxable Income', val: fmt(tax.taxable_income), color: '#f0f0f5' },
-                  { label: 'Federal Tax Owed', val: fmt(tax.federal_tax), color: '#ef4444' },
-                  { label: 'Effective Rate', val: pct(tax.effective_rate * 100), color: '#eab308' },
-                  { label: 'Marginal Rate', val: pct(tax.marginal_rate * 100), color: '#f97316' },
-                  { label: 'Monthly Take-Home', val: fmt(tax.estimated_monthly_takehome), color: '#22c55e' },
+                  { label: t('wealth.grossAnnual'), val: fmt(tax.gross_annual), color: '#22c55e' },
+                  { label: t('wealth.standardDeduction'), val: fmt(tax.standard_deduction), color: '#6366f1' },
+                  { label: t('wealth.taxableIncome'), val: fmt(tax.taxable_income), color: '#f0f0f5' },
+                  { label: t('wealth.federalTax'), val: fmt(tax.federal_tax), color: '#ef4444' },
+                  { label: t('wealth.effectiveRate'), val: pct(tax.effective_rate * 100), color: '#eab308' },
+                  { label: t('wealth.marginalRate'), val: pct(tax.marginal_rate * 100), color: '#f97316' },
+                  { label: t('wealth.monthlyTakeHome'), val: fmt(tax.estimated_monthly_takehome), color: '#22c55e' },
                 ].map(({ label, val, color }) => (
                   <div key={label} style={{ ...card }}>
                     <div style={{ fontSize: 11, color: '#9999bb', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
@@ -459,7 +469,7 @@ export default function WealthPage() {
 
               {/* Bracket breakdown */}
               <div style={{ ...card, marginBottom: 20 }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#f0f0f5', marginBottom: 20 }}>Tax Bracket Breakdown</h3>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#f0f0f5', marginBottom: 20 }}>{t('wealth.bracketBreakdown')}</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
                   <div>
                     {tax.bracket_breakdown.map((b, i) => (
@@ -475,7 +485,7 @@ export default function WealthPage() {
                             background: `hsl(${240 + i * 30}, 70%, 60%)`,
                           }} />
                         </div>
-                        <div style={{ fontSize: 11, color: '#555577', marginTop: 2 }}>Income in bracket: {fmt(b.income_in_bracket)}</div>
+                        <div style={{ fontSize: 11, color: '#555577', marginTop: 2 }}>{t('wealth.incomeInBracket')} {fmt(b.income_in_bracket)}</div>
                       </div>
                     ))}
                   </div>
@@ -507,7 +517,7 @@ export default function WealthPage() {
             </>
           )}
           {taxLoading && (
-            <div style={{ textAlign: 'center', padding: 60, color: '#9999bb' }}>Calculating your tax estimate…</div>
+            <div style={{ textAlign: 'center', padding: 60, color: '#9999bb' }}>{t('wealth.calculatingTax')}</div>
           )}
         </div>
       )}

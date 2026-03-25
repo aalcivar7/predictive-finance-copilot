@@ -1,7 +1,9 @@
 'use client';
 import type { Goal } from '@/types';
+import { useLang } from '@/lib/lang-context';
 
 export default function GoalCard({ goal, onDelete, onComplete }: { goal: Goal; onDelete: (id: number) => void; onComplete: (id: number) => void }) {
+  const { t } = useLang();
   const progress = Math.min(goal.progress_pct, 100);
 
   return (
@@ -14,7 +16,7 @@ export default function GoalCard({ goal, onDelete, onComplete }: { goal: Goal; o
           </h3>
           {goal.target_date && (
             <p style={{ fontSize: '12px', color: '#50505e' }}>
-              Due {new Date(goal.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              {t('goals.dueDateLabel')} {new Date(goal.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
           )}
         </div>
@@ -51,10 +53,10 @@ export default function GoalCard({ goal, onDelete, onComplete }: { goal: Goal; o
       {/* Footer */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontSize: '12px', fontWeight: 600, color: goal.is_completed ? '#34d399' : '#a78bfa' }}>
-          {progress.toFixed(1)}%{goal.is_completed && ' · Done!'}
+          {progress.toFixed(1)}%{goal.is_completed && ` · ${t('goals.doneLabel')}`}
         </span>
         {goal.months_to_goal && !goal.is_completed && (
-          <span style={{ fontSize: '12px', color: '#50505e' }}>~{goal.months_to_goal} mo left</span>
+          <span style={{ fontSize: '12px', color: '#50505e' }}>~{goal.months_to_goal} {t('goals.monthsLeft')}</span>
         )}
       </div>
     </div>

@@ -17,6 +17,7 @@ import type {
   DashboardData, HealthScore, Goal, Budget,
   Transaction, MonthSummary, TrendPoint, NetWorthHistoryOut,
 } from '@/types';
+import { useLang } from '@/lib/lang-context';
 
 const fmt = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 
@@ -43,16 +44,17 @@ function MiniRing({ score, color }: { score: number; color: string }) {
   );
 }
 
-const profileFields = [
-  { key: 'monthly_income',         label: 'Monthly Income ($)' },
-  { key: 'monthly_expenses',       label: 'Monthly Expenses ($)' },
-  { key: 'monthly_savings',        label: 'Monthly Savings ($)' },
-  { key: 'current_net_worth',      label: 'Net Worth ($)' },
-  { key: 'investment_return_rate', label: 'Expected Return (%)' },
-  { key: 'salary_growth_rate',     label: 'Salary Growth (%)' },
-] as const;
-
 export default function DashboardPage() {
+  const { t } = useLang();
+
+  const profileFields = [
+    { key: 'monthly_income',         label: t('dashboard.profileMonthlyIncome') },
+    { key: 'monthly_expenses',       label: t('dashboard.profileMonthlyExpenses') },
+    { key: 'monthly_savings',        label: t('dashboard.profileMonthlySavings') },
+    { key: 'current_net_worth',      label: t('dashboard.profileNetWorth') },
+    { key: 'investment_return_rate', label: t('dashboard.profileReturn') },
+    { key: 'salary_growth_rate',     label: t('dashboard.profileGrowth') },
+  ];
   const [data, setData]           = useState<DashboardData | null>(null);
   const [health, setHealth]       = useState<HealthScore | null>(null);
   const [goals, setGoals]         = useState<Goal[]>([]);
@@ -136,19 +138,19 @@ export default function DashboardPage() {
         {/* ── Header ── */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, color: '#f0f0f5', margin: 0 }}>Dashboard</h1>
-            <p style={{ color: '#9999bb', marginTop: 4, fontSize: 14 }}>Your complete financial command center</p>
+            <h1 style={{ fontSize: 26, fontWeight: 800, color: '#f0f0f5', margin: 0 }}>{t('dashboard.title')}</h1>
+            <p style={{ color: '#9999bb', marginTop: 4, fontSize: 14 }}>{t('dashboard.subtitle')}</p>
           </div>
           <button onClick={() => setEditing(v => !v)} style={{
             background: editing ? '#2a2a3a' : '#6366f1', color: editing ? '#9999bb' : '#fff',
             border: 'none', borderRadius: 10, padding: '10px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-          }}>{editing ? '✕ Cancel' : '✏️ Update Profile'}</button>
+          }}>{editing ? t('dashboard.cancelEdit') : t('dashboard.updateProfile')}</button>
         </div>
 
         {/* ── Edit Profile Form ── */}
         {editing && (
           <div style={{ ...card, marginBottom: 24 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: '#f0f0f5', marginBottom: 16 }}>Update Financial Profile</h2>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: '#f0f0f5', marginBottom: 16 }}>{t('dashboard.updateProfileTitle')}</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 16, marginBottom: 20 }}>
               {profileFields.map(({ key, label }) => (
                 <div key={key}>
@@ -162,19 +164,19 @@ export default function DashboardPage() {
             <button onClick={handleSave} disabled={saving} style={{
               background: '#22c55e', color: '#fff', border: 'none', borderRadius: 8,
               padding: '10px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-            }}>{saving ? 'Saving…' : '✓ Save Changes'}</button>
+            }}>{saving ? t('dashboard.savingProfile') : t('dashboard.saveChanges')}</button>
           </div>
         )}
 
         {/* ── Row 1: KPI Cards ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14, marginBottom: 20 }}>
           {[
-            { label: 'Net Worth', val: fmt(data.net_worth), color: '#6366f1', icon: '💎' },
-            { label: 'Monthly Income', val: fmt(data.monthly_income), color: '#22c55e', icon: '💰' },
-            { label: 'Monthly Expenses', val: fmt(data.monthly_expenses), color: '#ef4444', icon: '💸' },
-            { label: 'Monthly Savings', val: fmt(data.monthly_savings), color: '#06b6d4', icon: '🏦' },
-            { label: 'Savings Rate', val: `${data.savings_rate}%`, color: data.savings_rate >= 20 ? '#22c55e' : data.savings_rate >= 10 ? '#eab308' : '#ef4444', icon: '📊' },
-            { label: 'Monthly Cashflow', val: fmt(data.cashflow), color: data.cashflow >= 0 ? '#22c55e' : '#ef4444', icon: data.cashflow >= 0 ? '📈' : '📉' },
+            { label: t('dashboard.netWorth'), val: fmt(data.net_worth), color: '#6366f1', icon: '💎' },
+            { label: t('dashboard.monthlyIncome'), val: fmt(data.monthly_income), color: '#22c55e', icon: '💰' },
+            { label: t('dashboard.monthlyExpenses'), val: fmt(data.monthly_expenses), color: '#ef4444', icon: '💸' },
+            { label: t('dashboard.monthlySavings'), val: fmt(data.monthly_savings), color: '#06b6d4', icon: '🏦' },
+            { label: t('dashboard.savingsRate'), val: `${data.savings_rate}%`, color: data.savings_rate >= 20 ? '#22c55e' : data.savings_rate >= 10 ? '#eab308' : '#ef4444', icon: '📊' },
+            { label: t('dashboard.cashflow'), val: fmt(data.cashflow), color: data.cashflow >= 0 ? '#22c55e' : '#ef4444', icon: data.cashflow >= 0 ? '📈' : '📉' },
           ].map(({ label, val, color, icon }) => (
             <div key={label} style={{ ...card }}>
               <div style={{ fontSize: 20, marginBottom: 8 }}>{icon}</div>
@@ -191,42 +193,42 @@ export default function DashboardPage() {
             <Link href="/wealth" style={{ textDecoration: 'none' }}>
               <div style={{ ...card, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, minWidth: 150, cursor: 'pointer', transition: 'border-color 0.2s', borderColor: '#3a3a5a' }}>
                 <MiniRing score={health.score} color={health.color} />
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#f0f0f5' }}>Health Score</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#f0f0f5' }}>{t('dashboard.healthScore')}</div>
                 <div style={{ fontSize: 11, color: '#9999bb' }}>{health.label}</div>
-                <div style={{ fontSize: 11, color: '#6366f1', marginTop: 4 }}>View details →</div>
+                <div style={{ fontSize: 11, color: '#6366f1', marginTop: 4 }}>{t('dashboard.viewDetails')}</div>
               </div>
             </Link>
           )}
 
           {/* Alerts panel */}
           <div style={{ ...card }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', marginBottom: 14 }}>🔔 Alerts & Insights</h3>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', marginBottom: 14 }}>{t('dashboard.alertsTitle')}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {overBudget.length > 0 && overBudget.map(b => (
                 <div key={b.id} style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid #ef444433', borderRadius: 8, padding: '10px 14px', fontSize: 13 }}>
                   🚨 <strong style={{ color: '#ef4444' }}>{b.category}</strong>
-                  <span style={{ color: '#ccccdd' }}> is {(b.pct_used - 100).toFixed(0)}% over budget ({fmt(b.spent_this_month)} / {fmt(b.limit_amount)})</span>
+                  <span style={{ color: '#ccccdd' }}> {t('dashboard.overBudget').replace('{pct}', (b.pct_used - 100).toFixed(0)).replace('{spent}', fmt(b.spent_this_month)).replace('{limit}', fmt(b.limit_amount))}</span>
                 </div>
               ))}
               {nearBudget.length > 0 && nearBudget.map(b => (
                 <div key={b.id} style={{ background: 'rgba(234,179,8,0.08)', border: '1px solid #eab30833', borderRadius: 8, padding: '10px 14px', fontSize: 13 }}>
                   ⚠️ <strong style={{ color: '#eab308' }}>{b.category}</strong>
-                  <span style={{ color: '#ccccdd' }}> at {b.pct_used.toFixed(0)}% of budget — {fmt(b.remaining)} left</span>
+                  <span style={{ color: '#ccccdd' }}> {t('dashboard.nearBudget').replace('{pct}', b.pct_used.toFixed(0)).replace('{remaining}', fmt(b.remaining))}</span>
                 </div>
               ))}
               {data.savings_rate < 10 && (
                 <div style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid #f9731633', borderRadius: 8, padding: '10px 14px', fontSize: 13 }}>
-                  💡 <span style={{ color: '#ccccdd' }}>Savings rate is <strong style={{ color: '#f97316' }}>{data.savings_rate}%</strong>. Aim for 20%+ for financial security.</span>
+                  💡 <span style={{ color: '#ccccdd' }}>{t('dashboard.lowSavings').replace('{rate}', String(data.savings_rate))}</span>
                 </div>
               )}
               {data.cashflow < 0 && (
                 <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid #ef444433', borderRadius: 8, padding: '10px 14px', fontSize: 13 }}>
-                  🚨 <span style={{ color: '#ccccdd' }}>Negative cashflow of <strong style={{ color: '#ef4444' }}>{fmt(data.cashflow)}</strong>. Expenses exceed income.</span>
+                  🚨 <span style={{ color: '#ccccdd' }}>{t('dashboard.negativeCashflow').replace('{amount}', fmt(data.cashflow))}</span>
                 </div>
               )}
               {overBudget.length === 0 && nearBudget.length === 0 && data.savings_rate >= 10 && data.cashflow >= 0 && (
                 <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid #22c55e33', borderRadius: 8, padding: '10px 14px', fontSize: 13 }}>
-                  ✅ <span style={{ color: '#22c55e' }}>All budgets on track and cashflow is positive. Great work!</span>
+                  ✅ <span style={{ color: '#22c55e' }}>{t('dashboard.allGood')}</span>
                 </div>
               )}
             </div>
@@ -238,8 +240,8 @@ export default function DashboardPage() {
           {/* 6-month trend */}
           <div style={{ ...card }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>6-Month Cashflow Trend</h3>
-              <Link href="/money" style={{ fontSize: 12, color: '#6366f1', textDecoration: 'none' }}>View all →</Link>
+              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>{t('dashboard.cashflowTrend')}</h3>
+              <Link href="/money" style={{ fontSize: 12, color: '#6366f1', textDecoration: 'none' }}>{t('common.viewAll')}</Link>
             </div>
             {trends.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
@@ -264,8 +266,8 @@ export default function DashboardPage() {
               </ResponsiveContainer>
             ) : (
               <div style={{ textAlign: 'center', color: '#555577', padding: 40, fontSize: 13 }}>
-                No transaction history yet.<br />
-                <Link href="/money" style={{ color: '#6366f1' }}>Add transactions →</Link>
+                {t('dashboard.noTxHistory')}<br />
+                <Link href="/money" style={{ color: '#6366f1' }}>{t('dashboard.addTransactions')}</Link>
               </div>
             )}
           </div>
@@ -273,8 +275,8 @@ export default function DashboardPage() {
           {/* Spending donut */}
           <div style={{ ...card }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>This Month's Spending</h3>
-              {summary && <span style={{ fontSize: 12, color: '#9999bb' }}>Total: {fmt(summary.total_expenses)}</span>}
+              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>{t('dashboard.thisMonthSpending')}</h3>
+              {summary && <span style={{ fontSize: 12, color: '#9999bb' }}>{t('dashboard.totalLabel')} {fmt(summary.total_expenses)}</span>}
             </div>
             {pieData.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
@@ -287,8 +289,8 @@ export default function DashboardPage() {
               </ResponsiveContainer>
             ) : (
               <div style={{ textAlign: 'center', color: '#555577', padding: 40, fontSize: 13 }}>
-                No expenses this month yet.<br />
-                <Link href="/money" style={{ color: '#6366f1' }}>Log expenses →</Link>
+                {t('dashboard.noExpensesMonth')}<br />
+                <Link href="/money" style={{ color: '#6366f1' }}>{t('dashboard.logExpenses')}</Link>
               </div>
             )}
             {pieData.length > 0 && (
@@ -309,8 +311,8 @@ export default function DashboardPage() {
           {/* Budget bars */}
           <div style={{ ...card }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>Budget Overview</h3>
-              <Link href="/plan" style={{ fontSize: 12, color: '#6366f1', textDecoration: 'none' }}>Manage →</Link>
+              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>{t('dashboard.budgetOverview')}</h3>
+              <Link href="/plan" style={{ fontSize: 12, color: '#6366f1', textDecoration: 'none' }}>{t('common.manage')}</Link>
             </div>
             {budgets.length > 0 ? budgets.slice(0, 5).map(b => {
               const col = b.pct_used > 100 ? '#ef4444' : b.pct_used >= 80 ? '#eab308' : '#22c55e';
@@ -324,15 +326,15 @@ export default function DashboardPage() {
                     <div style={{ width: `${Math.min(b.pct_used, 100)}%`, height: '100%', borderRadius: 6, background: col }} />
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-                    <span style={{ fontSize: 10, color: '#555577' }}>{fmt(b.spent_this_month)} spent</span>
-                    <span style={{ fontSize: 10, color: '#555577' }}>{fmt(b.limit_amount)} limit</span>
+                    <span style={{ fontSize: 10, color: '#555577' }}>{fmt(b.spent_this_month)} {t('dashboard.spentLabel')}</span>
+                    <span style={{ fontSize: 10, color: '#555577' }}>{fmt(b.limit_amount)} {t('dashboard.limitLabel')}</span>
                   </div>
                 </div>
               );
             }) : (
               <div style={{ textAlign: 'center', color: '#555577', padding: 30, fontSize: 13 }}>
-                No budgets set.<br />
-                <Link href="/plan" style={{ color: '#6366f1' }}>Create budgets →</Link>
+                {t('dashboard.noBudgets')}<br />
+                <Link href="/plan" style={{ color: '#6366f1' }}>{t('dashboard.createBudgets')}</Link>
               </div>
             )}
           </div>
@@ -340,12 +342,12 @@ export default function DashboardPage() {
           {/* Goals */}
           <div style={{ ...card }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>Goals</h3>
+              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>{t('dashboard.goals')}</h3>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                 {completedGoals.length > 0 && (
-                  <span style={{ fontSize: 12, color: '#22c55e' }}>✓ {completedGoals.length} completed</span>
+                  <span style={{ fontSize: 12, color: '#22c55e' }}>✓ {completedGoals.length} {t('dashboard.completedLabel')}</span>
                 )}
-                <Link href="/goals" style={{ fontSize: 12, color: '#6366f1', textDecoration: 'none' }}>Manage →</Link>
+                <Link href="/goals" style={{ fontSize: 12, color: '#6366f1', textDecoration: 'none' }}>{t('common.manage')}</Link>
               </div>
             </div>
             {activeGoals.length > 0 ? activeGoals.slice(0, 4).map(g => (
@@ -369,8 +371,8 @@ export default function DashboardPage() {
               </div>
             )) : (
               <div style={{ textAlign: 'center', color: '#555577', padding: 30, fontSize: 13 }}>
-                No active goals.<br />
-                <Link href="/goals" style={{ color: '#6366f1' }}>Create a goal →</Link>
+                {t('dashboard.noActiveGoals')}<br />
+                <Link href="/goals" style={{ color: '#6366f1' }}>{t('dashboard.createGoal')}</Link>
               </div>
             )}
           </div>
@@ -381,7 +383,7 @@ export default function DashboardPage() {
           {/* Net Worth mini chart */}
           <div style={{ ...card }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>Net Worth History</h3>
+              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>{t('dashboard.nwHistory')}</h3>
               <div style={{ textAlign: 'right' }}>
                 {nwHistory && nwHistory.change_30d !== 0 && (
                   <span style={{ fontSize: 12, color: nwHistory.change_30d >= 0 ? '#22c55e' : '#ef4444', display: 'block' }}>
@@ -409,8 +411,8 @@ export default function DashboardPage() {
               </ResponsiveContainer>
             ) : (
               <div style={{ textAlign: 'center', color: '#555577', padding: 30, fontSize: 13 }}>
-                Log snapshots to track growth.<br />
-                <Link href="/wealth" style={{ color: '#6366f1' }}>Add snapshot →</Link>
+                {t('dashboard.logSnapshots')}<br />
+                <Link href="/wealth" style={{ color: '#6366f1' }}>{t('dashboard.addSnapshot')}</Link>
               </div>
             )}
           </div>
@@ -418,8 +420,8 @@ export default function DashboardPage() {
           {/* Recent transactions */}
           <div style={{ ...card }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>Recent Transactions</h3>
-              <Link href="/money" style={{ fontSize: 12, color: '#6366f1', textDecoration: 'none' }}>View all →</Link>
+              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>{t('dashboard.recentTx')}</h3>
+              <Link href="/money" style={{ fontSize: 12, color: '#6366f1', textDecoration: 'none' }}>{t('common.viewAll')}</Link>
             </div>
             {recent.length > 0 ? recent.map(t => (
               <div key={t.id} style={{
@@ -436,8 +438,8 @@ export default function DashboardPage() {
               </div>
             )) : (
               <div style={{ textAlign: 'center', color: '#555577', padding: 30, fontSize: 13 }}>
-                No transactions yet.<br />
-                <Link href="/money" style={{ color: '#6366f1' }}>Log your first →</Link>
+                {t('dashboard.noTxYet')}<br />
+                <Link href="/money" style={{ color: '#6366f1' }}>{t('dashboard.logFirst')}</Link>
               </div>
             )}
           </div>
@@ -446,8 +448,8 @@ export default function DashboardPage() {
         {/* ── Row 6: Projection Chart ── */}
         <div style={{ ...card }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>10-Year Wealth Projection</h3>
-            <Link href="/simulator" style={{ fontSize: 12, color: '#6366f1', textDecoration: 'none' }}>Run scenarios →</Link>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#f0f0f5', margin: 0 }}>{t('dashboard.projection')}</h3>
+            <Link href="/simulator" style={{ fontSize: 12, color: '#6366f1', textDecoration: 'none' }}>{t('dashboard.runScenarios')}</Link>
           </div>
           <ProjectionChart data={data.projections} />
         </div>
