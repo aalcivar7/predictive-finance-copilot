@@ -35,8 +35,13 @@ export default function InsightsPage() {
   const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     setLoading(true);
-    getInsights(lang).then((d) => setInsights(d.insights)).finally(() => setLoading(false));
+    getInsights(lang)
+      .then((d) => { if (!cancelled) setInsights(d.insights); })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, [lang]);
 
   const sections = [

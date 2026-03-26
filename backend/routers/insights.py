@@ -94,7 +94,7 @@ def generate_insights(profile: FinancialProfile, goals: List[Goal], lang: str = 
         if months:
             insights.append(Insight(
                 type="tip",
-                title=f"Meta: {closest.name}",
+                title=f"Meta: {closest.name}" if es else f"Goal: {closest.name}",
                 message=f"A tu tasa de ahorro actual, alcanzarás esta meta en ~{months} meses. Aumenta el ahorro para lograrlo antes." if es else f"At your current savings rate, you'll reach this goal in ~{months} months. Increase savings to get there faster.",
             ))
 
