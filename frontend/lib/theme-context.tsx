@@ -28,14 +28,14 @@ const PALETTES: Record<Theme, ThemeColors> = {
     border: '#e5e7eb', borderSubtle: '#f3f4f6', borderStrong: '#d1d5db',
   },
   ocean: {
-    bg: '#060d1a', bgCard: '#0d1628', bgElevated: '#071020', bgSidebar: '#08111e', bgHover: '#142035',
-    text: '#e2e8f0', text2: '#cbd5e1', textSecondary: '#94a3b8', textMuted: '#64748b', textDim: '#475569',
-    border: '#1a3050', borderSubtle: '#0f2040', borderStrong: '#2a4a7a',
+    bg: '#051830', bgCard: '#0a2448', bgElevated: '#071e3d', bgSidebar: '#061a35', bgHover: '#0e2f5a',
+    text: '#bae6fd', text2: '#7dd3fc', textSecondary: '#38bdf8', textMuted: '#0ea5e9', textDim: '#0369a1',
+    border: '#1a4a7a', borderSubtle: '#0e3060', borderStrong: '#2a6aaa',
   },
   forest: {
-    bg: '#060f0a', bgCard: '#0d1f12', bgElevated: '#071409', bgSidebar: '#08170d', bgHover: '#12281a',
-    text: '#dcfce7', text2: '#bbf7d0', textSecondary: '#86efac', textMuted: '#4ade80', textDim: '#166534',
-    border: '#14532d', borderSubtle: '#0f3d22', borderStrong: '#166534',
+    bg: '#061209', bgCard: '#0b2213', bgElevated: '#081a0e', bgSidebar: '#071810', bgHover: '#112e18',
+    text: '#d1fae5', text2: '#a7f3d0', textSecondary: '#34d399', textMuted: '#10b981', textDim: '#065f46',
+    border: '#145a32', borderSubtle: '#0d4224', borderStrong: '#1a7a42',
   },
 };
 

@@ -19,7 +19,7 @@ const NAV_KEYS: { href: string; key: string; emoji: string }[] = [
 
 const LANGS: { id: Lang; emoji: string; labelKey: string }[] = [
   { id: 'en', emoji: '🇺🇸', labelKey: 'nav.langEn' },
-  { id: 'es', emoji: '🇲🇽', labelKey: 'nav.langEs' },
+  { id: 'es', emoji: '🇪🇨', labelKey: 'nav.langEs' },
 ];
 
 export default function Navbar() {
@@ -30,6 +30,8 @@ export default function Navbar() {
   const [showThemePicker, setShowThemePicker] = useState(false);
   const [showLangPicker,  setShowLangPicker]  = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileThemeOpen, setMobileThemeOpen] = useState(false);
+  const [mobileLangOpen,  setMobileLangOpen]  = useState(false);
 
   function handleLogout() {
     removeToken();
@@ -258,38 +260,65 @@ export default function Navbar() {
 
             {/* Theme picker */}
             <div style={{ borderTop: `1px solid ${colors.borderSubtle}`, paddingTop: '12px', marginTop: '12px' }}>
-              <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: colors.textDim, padding: '0 14px', marginBottom: '8px' }}>{t('nav.theme')}</p>
-              {THEMES.map(t2 => (
-                <button key={t2.id} onClick={() => setTheme(t2.id)} style={{
-                  display: 'flex', alignItems: 'center', gap: '12px',
-                  padding: '11px 14px', borderRadius: '10px', border: 'none', cursor: 'pointer',
-                  fontSize: '15px', fontWeight: theme === t2.id ? 700 : 500,
-                  background: theme === t2.id ? '#2a1f4a' : 'transparent',
-                  color: theme === t2.id ? '#c4b5fd' : colors.textMuted,
-                  width: '100%', textAlign: 'left',
-                }}>
-                  <span style={{ fontSize: '18px' }}>{t2.emoji}</span> {t2.label}
-                  {theme === t2.id && <span style={{ marginLeft: 'auto', color: '#a78bfa' }}>✓</span>}
-                </button>
-              ))}
+              <button onClick={() => setMobileThemeOpen(v => !v)} style={{
+                display: 'flex', alignItems: 'center', gap: '12px',
+                padding: '11px 14px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+                fontSize: '15px', fontWeight: 500, background: mobileThemeOpen ? colors.bgHover : 'transparent',
+                color: colors.textMuted, width: '100%', textAlign: 'left',
+              }}>
+                <span style={{ fontSize: '18px' }}>🎨</span>
+                {t('nav.theme')}
+                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>{mobileThemeOpen ? '▲' : '▼'}</span>
+              </button>
+              {mobileThemeOpen && (
+                <div style={{ paddingLeft: '12px', paddingTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  {THEMES.map(t2 => (
+                    <button key={t2.id} onClick={() => { setTheme(t2.id); setMobileThemeOpen(false); }} style={{
+                      display: 'flex', alignItems: 'center', gap: '12px',
+                      padding: '10px 14px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+                      fontSize: '14px', fontWeight: theme === t2.id ? 700 : 500,
+                      background: theme === t2.id ? '#2a1f4a' : 'transparent',
+                      color: theme === t2.id ? '#c4b5fd' : colors.textMuted,
+                      width: '100%', textAlign: 'left',
+                    }}>
+                      <span style={{ fontSize: '16px' }}>{t2.emoji}</span> {t2.label}
+                      {theme === t2.id && <span style={{ marginLeft: 'auto', color: '#a78bfa' }}>✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Language picker */}
             <div style={{ borderTop: `1px solid ${colors.borderSubtle}`, paddingTop: '12px', marginTop: '4px' }}>
-              <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: colors.textDim, padding: '0 14px', marginBottom: '8px' }}>{t('nav.language')}</p>
-              {LANGS.map(l => (
-                <button key={l.id} onClick={() => setLang(l.id)} style={{
-                  display: 'flex', alignItems: 'center', gap: '12px',
-                  padding: '11px 14px', borderRadius: '10px', border: 'none', cursor: 'pointer',
-                  fontSize: '15px', fontWeight: lang === l.id ? 700 : 500,
-                  background: lang === l.id ? '#2a1f4a' : 'transparent',
-                  color: lang === l.id ? '#c4b5fd' : colors.textMuted,
-                  width: '100%', textAlign: 'left',
-                }}>
-                  <span style={{ fontSize: '18px' }}>{l.emoji}</span> {t(l.labelKey)}
-                  {lang === l.id && <span style={{ marginLeft: 'auto', color: '#a78bfa' }}>✓</span>}
-                </button>
-              ))}
+              <button onClick={() => setMobileLangOpen(v => !v)} style={{
+                display: 'flex', alignItems: 'center', gap: '12px',
+                padding: '11px 14px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+                fontSize: '15px', fontWeight: 500, background: mobileLangOpen ? colors.bgHover : 'transparent',
+                color: colors.textMuted, width: '100%', textAlign: 'left',
+              }}>
+                <span style={{ fontSize: '18px' }}>🌐</span>
+                {t('nav.language')}
+                <span style={{ marginLeft: 'auto', fontSize: '12px', marginRight: '4px', color: colors.textDim }}>{lang.toUpperCase()}</span>
+                <span style={{ fontSize: '12px' }}>{mobileLangOpen ? '▲' : '▼'}</span>
+              </button>
+              {mobileLangOpen && (
+                <div style={{ paddingLeft: '12px', paddingTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  {LANGS.map(l => (
+                    <button key={l.id} onClick={() => { setLang(l.id); setMobileLangOpen(false); }} style={{
+                      display: 'flex', alignItems: 'center', gap: '12px',
+                      padding: '10px 14px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+                      fontSize: '14px', fontWeight: lang === l.id ? 700 : 500,
+                      background: lang === l.id ? '#2a1f4a' : 'transparent',
+                      color: lang === l.id ? '#c4b5fd' : colors.textMuted,
+                      width: '100%', textAlign: 'left',
+                    }}>
+                      <span style={{ fontSize: '16px' }}>{l.emoji}</span> {t(l.labelKey)}
+                      {lang === l.id && <span style={{ marginLeft: 'auto', color: '#a78bfa' }}>✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Logout */}
