@@ -234,7 +234,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Row 2: Health Score + Alerts ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 16, marginBottom: 20 }}>
+        <div className="dashboard-health-row">
           {/* Health Score widget */}
           {health && (
             <Link href="/wealth" style={{ textDecoration: 'none' }}>

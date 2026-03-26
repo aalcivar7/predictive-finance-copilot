@@ -50,7 +50,7 @@ export const updateGoal = async (id: number, updates: Partial<Goal>) => (await a
 export const deleteGoal = async (id: number) => { await api.delete(`/goals/${id}`); };
 
 // ── Insights ──────────────────────────────────────────────────────────────────
-export const getInsights = async () => (await api.get('/insights')).data as { insights: Insight[] };
+export const getInsights = async (lang = 'en') => (await api.get('/insights', { params: { lang } })).data as { insights: Insight[] };
 
 // ── Transactions ──────────────────────────────────────────────────────────────
 export const getTransactions = async (params?: { transaction_type?: string; month?: string }) =>

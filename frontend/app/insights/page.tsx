@@ -30,13 +30,14 @@ function InsightCard({ insight, label }: { insight: Insight; label: string }) {
 }
 
 export default function InsightsPage() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [insights, setInsights] = useState<Insight[]>([]);
   const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
-    getInsights().then((d) => setInsights(d.insights)).finally(() => setLoading(false));
-  }, []);
+    setLoading(true);
+    getInsights(lang).then((d) => setInsights(d.insights)).finally(() => setLoading(false));
+  }, [lang]);
 
   const sections = [
     { key: 'warning', label: t('insights.alertsSection'),         badgeLabel: t('insights.alertLabel') },

@@ -252,3 +252,16 @@ main, aside, nav {
   .grid-3 { grid-template-columns: 1fr 1fr; gap: 8px; }
   .grid-4 { grid-template-columns: 1fr 1fr; gap: 8px; }
 }
+
+/* ── Dashboard health + alerts row ───────────────────────── */
+.dashboard-health-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+@media (max-width: 768px) {
+  .dashboard-health-row {
+    grid-template-columns: 1fr;
+  }
+}
