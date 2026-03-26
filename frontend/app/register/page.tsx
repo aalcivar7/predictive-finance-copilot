@@ -64,8 +64,8 @@ export default function RegisterPage() {
             </div>
 
             <div style={{ marginBottom: '16px' }}>
-              <label className="label">Full Name <span style={{ color: colors.textDim, textTransform: 'none', fontWeight: 400 }}>(optional)</span></label>
-              <input type="text" name="full_name" className="input" value={form.full_name} onChange={handleChange} placeholder="Jane Doe" />
+              <label className="label">First Name</label>
+              <input type="text" name="full_name" className="input" value={form.full_name} onChange={handleChange} required placeholder="Jane" autoComplete="given-name" />
             </div>
 
             <div style={{ marginBottom: '20px' }}>

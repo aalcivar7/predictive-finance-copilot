@@ -1,4 +1,4 @@
-export interface User { id: number; email: string; full_name: string | null; created_at: string; }
+export interface User { id: number; username: string | null; email: string | null; full_name: string | null; created_at: string; }
 export interface ProjectionPoint { year: number; net_worth: number; low: number; high: number; }
 export interface DashboardData { net_worth: number; monthly_income: number; monthly_expenses: number; monthly_savings: number; savings_rate: number; cashflow: number; projections: ProjectionPoint[]; }
 export interface FinancialProfile { monthly_income: number; monthly_expenses: number; monthly_savings: number; current_net_worth: number; investment_return_rate: number; salary_growth_rate: number; updated_at: string | null; }

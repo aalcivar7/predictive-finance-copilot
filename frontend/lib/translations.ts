@@ -33,6 +33,7 @@ const en = {
   },
   dashboard: {
     title: 'Dashboard', subtitle: 'Your complete financial command center',
+    greeting: 'Hello,',
     updateProfile: '✏️ Update Profile', cancelEdit: '✕ Cancel',
     updateProfileTitle: 'Update Financial Profile',
     savingProfile: 'Saving…', saveChanges: '✓ Save Changes',
@@ -61,6 +62,7 @@ const en = {
     recentTx: 'Recent Transactions', noTxYet: 'No transactions yet.',
     logFirst: 'Log your first →',
     projection: '10-Year Wealth Projection', runScenarios: 'Run scenarios →',
+    profileFirstName: 'First Name',
     profileMonthlyIncome: 'Monthly Income ($)', profileMonthlyExpenses: 'Monthly Expenses ($)',
     profileMonthlySavings: 'Monthly Savings ($)', profileNetWorth: 'Net Worth ($)',
     profileReturn: 'Expected Return (%)', profileGrowth: 'Salary Growth (%)',
@@ -203,6 +205,7 @@ const es: Translations = {
   },
   dashboard: {
     title: 'Panel', subtitle: 'Tu centro de comando financiero',
+    greeting: '¡Hola,',
     updateProfile: '✏️ Editar Perfil', cancelEdit: '✕ Cancelar',
     updateProfileTitle: 'Actualizar Perfil Financiero',
     savingProfile: 'Guardando…', saveChanges: '✓ Guardar Cambios',
@@ -231,6 +234,7 @@ const es: Translations = {
     recentTx: 'Transacciones Recientes', noTxYet: 'Sin transacciones.',
     logFirst: 'Registrar la primera →',
     projection: 'Proyección 10 Años', runScenarios: 'Ver escenarios →',
+    profileFirstName: 'Nombre',
     profileMonthlyIncome: 'Ingresos Mensuales ($)', profileMonthlyExpenses: 'Gastos Mensuales ($)',
     profileMonthlySavings: 'Ahorro Mensual ($)', profileNetWorth: 'Patrimonio Neto ($)',
     profileReturn: 'Rendimiento Esperado (%)', profileGrowth: 'Crecimiento Salarial (%)',

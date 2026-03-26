@@ -34,6 +34,7 @@ export const login = async (email: string, password: string) => {
   return (await api.post('/auth/login', p, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })).data as { access_token: string; token_type: string };
 };
 export const getMe = async () => (await api.get('/auth/me')).data as User;
+export const updateMe = async (data: { full_name?: string }) => (await api.put('/auth/me', data)).data as User;
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 export const getDashboard = async () => (await api.get('/dashboard')).data as DashboardData;

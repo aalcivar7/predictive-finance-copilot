@@ -8,14 +8,14 @@ import {
 import ProtectedRoute from '@/components/ProtectedRoute';
 import ProjectionChart from '@/components/charts/ProjectionChart';
 import {
-  getDashboard, updateProfile,
+  getDashboard, updateProfile, getMe, updateMe,
   getHealthScore, getGoals, getBudgets,
   getTransactions, getMonthSummary, getSpendingTrends,
   getNetWorthHistory,
 } from '@/lib/api';
 import type {
   DashboardData, HealthScore, Goal, Budget,
-  Transaction, MonthSummary, TrendPoint, NetWorthHistoryOut,
+  Transaction, MonthSummary, TrendPoint, NetWorthHistoryOut, User,
 } from '@/types';
 import { useLang } from '@/lib/lang-context';
 
@@ -55,6 +55,7 @@ export default function DashboardPage() {
     { key: 'investment_return_rate', label: t('dashboard.profileReturn') },
     { key: 'salary_growth_rate',     label: t('dashboard.profileGrowth') },
   ];
+  const [user, setUser]           = useState<User | null>(null);
   const [data, setData]           = useState<DashboardData | null>(null);
   const [health, setHealth]       = useState<HealthScore | null>(null);
   const [goals, setGoals]         = useState<Goal[]>([]);
@@ -66,19 +67,23 @@ export default function DashboardPage() {
   const [editing, setEditing]     = useState(false);
   const [saving, setSaving]       = useState(false);
   const [form, setForm]           = useState({
+    first_name: '',
     monthly_income: '', monthly_expenses: '', monthly_savings: '',
     current_net_worth: '', investment_return_rate: '7', salary_growth_rate: '3',
   });
 
   const load = useCallback(async () => {
     try {
-      const [d, h, g, b, tx, sum, tr, nw] = await Promise.all([
+      const [d, h, g, b, tx, sum, tr, nw, me] = await Promise.all([
         getDashboard(), getHealthScore(), getGoals(), getBudgets(),
         getTransactions(), getMonthSummary(), getSpendingTrends(6), getNetWorthHistory(),
+        getMe(),
       ]);
       setData(d); setHealth(h); setGoals(g); setBudgets(b);
       setRecent(tx.slice(0, 6)); setSummary(sum); setTrends(tr); setNwHistory(nw);
+      setUser(me);
       setForm({
+        first_name:             me.full_name ?? '',
         monthly_income:         String(d.monthly_income),
         monthly_expenses:       String(d.monthly_expenses),
         monthly_savings:        String(d.monthly_savings),
@@ -94,14 +99,17 @@ export default function DashboardPage() {
   async function handleSave() {
     setSaving(true);
     try {
-      await updateProfile({
-        monthly_income:         parseFloat(form.monthly_income)         || 0,
-        monthly_expenses:       parseFloat(form.monthly_expenses)       || 0,
-        monthly_savings:        parseFloat(form.monthly_savings)        || 0,
-        current_net_worth:      parseFloat(form.current_net_worth)      || 0,
-        investment_return_rate: parseFloat(form.investment_return_rate) / 100 || 0.07,
-        salary_growth_rate:     parseFloat(form.salary_growth_rate)     / 100 || 0.03,
-      });
+      await Promise.all([
+        updateProfile({
+          monthly_income:         parseFloat(form.monthly_income)         || 0,
+          monthly_expenses:       parseFloat(form.monthly_expenses)       || 0,
+          monthly_savings:        parseFloat(form.monthly_savings)        || 0,
+          current_net_worth:      parseFloat(form.current_net_worth)      || 0,
+          investment_return_rate: parseFloat(form.investment_return_rate) / 100 || 0.07,
+          salary_growth_rate:     parseFloat(form.salary_growth_rate)     / 100 || 0.03,
+        }),
+        form.first_name.trim() ? updateMe({ full_name: form.first_name.trim() }) : Promise.resolve(),
+      ]);
       await load();
       setEditing(false);
     } finally { setSaving(false); }
@@ -138,7 +146,9 @@ export default function DashboardPage() {
         {/* ── Header ── */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, color: '#f0f0f5', margin: 0 }}>{t('dashboard.title')}</h1>
+            <h1 style={{ fontSize: 26, fontWeight: 800, color: '#f0f0f5', margin: 0 }}>
+              {user?.full_name ? `${t('dashboard.greeting')} ${user.full_name}!` : t('dashboard.title')}
+            </h1>
             <p style={{ color: '#9999bb', marginTop: 4, fontSize: 14 }}>{t('dashboard.subtitle')}</p>
           </div>
           <button onClick={() => setEditing(v => !v)} style={{
@@ -151,6 +161,13 @@ export default function DashboardPage() {
         {editing && (
           <div style={{ ...card, marginBottom: 24 }}>
             <h2 style={{ fontSize: 16, fontWeight: 700, color: '#f0f0f5', marginBottom: 16 }}>{t('dashboard.updateProfileTitle')}</h2>
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ fontSize: 12, color: '#9999bb', display: 'block', marginBottom: 4 }}>{t('dashboard.profileFirstName')}</label>
+              <input type="text" className="input" style={{ maxWidth: 240 }}
+                value={form.first_name}
+                onChange={e => setForm({ ...form, first_name: e.target.value })}
+                placeholder="Your first name" />
+            </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 16, marginBottom: 20 }}>
               {profileFields.map(({ key, label }) => (
                 <div key={key}>
