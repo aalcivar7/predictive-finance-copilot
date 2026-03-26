@@ -62,6 +62,7 @@ const en = {
     recentTx: 'Recent Transactions', noTxYet: 'No transactions yet.',
     logFirst: 'Log your first →',
     projection: '10-Year Wealth Projection', runScenarios: 'Run scenarios →',
+    exportReport: 'Export Report',
     profileFirstName: 'First Name',
     profileMonthlyIncome: 'Monthly Income ($)', profileMonthlyExpenses: 'Monthly Expenses ($)',
     profileMonthlySavings: 'Monthly Savings ($)', profileNetWorth: 'Net Worth ($)',
@@ -174,7 +175,7 @@ export type Translations = typeof en;
 
 const es: Translations = {
   nav: {
-    dashboard: 'Panel', money: 'Dinero', plan: 'Plan',
+    dashboard: 'Tablero', money: 'Movimientos', plan: 'Planeación',
     wealth: 'Patrimonio', goals: 'Metas', simulator: 'Simulador',
     insights: 'Análisis', theme: 'Tema', signOut: 'Cerrar sesión',
     language: 'Idioma', langEn: 'Inglés', langEs: 'Español',
@@ -185,7 +186,7 @@ const es: Translations = {
     days: 'días', months: 'meses', viewAll: 'Ver todo →', manage: 'Gestionar →', view: 'Ver →',
   },
   money: {
-    title: 'Dinero', subtitle: 'Todos tus flujos de dinero en un lugar',
+    title: 'Movimientos', subtitle: 'Todos tus flujos de dinero en un lugar',
     monthlyIncome: 'Ingresos Mensuales', monthlyExpenses: 'Gastos Mensuales',
     netSavings: 'Ahorro Neto', savingsRate: 'Tasa de Ahorro',
     incomeSources: 'Fuentes de Ingreso', streams: 'fuentes',
@@ -204,7 +205,7 @@ const es: Translations = {
     income: 'Ingresos', expensesLabel: 'Gastos',
   },
   dashboard: {
-    title: 'Panel', subtitle: 'Tu centro de comando financiero',
+    title: 'Tablero', subtitle: 'Tu centro de comando financiero',
     greeting: '¡Hola,',
     updateProfile: '✏️ Editar Perfil', cancelEdit: '✕ Cancelar',
     updateProfileTitle: 'Actualizar Perfil Financiero',
@@ -234,6 +235,7 @@ const es: Translations = {
     recentTx: 'Transacciones Recientes', noTxYet: 'Sin transacciones.',
     logFirst: 'Registrar la primera →',
     projection: 'Proyección 10 Años', runScenarios: 'Ver escenarios →',
+    exportReport: 'Exportar Reporte',
     profileFirstName: 'Nombre',
     profileMonthlyIncome: 'Ingresos Mensuales ($)', profileMonthlyExpenses: 'Gastos Mensuales ($)',
     profileMonthlySavings: 'Ahorro Mensual ($)', profileNetWorth: 'Patrimonio Neto ($)',
@@ -251,7 +253,7 @@ const es: Translations = {
     dueDateLabel: 'Vence', placeholder: 'Fondo de Emergencia', create: 'Crear Meta',
   },
   plan: {
-    title: 'Plan', subtitle: 'Presupuestos, deudas y facturas recurrentes',
+    title: 'Planeación', subtitle: 'Presupuestos, deudas y facturas recurrentes',
     tabBudget: '📊 Presupuesto', tabDebt: '💳 Deudas', tabBills: '🧾 Facturas',
     budgetTitle: 'Presupuestos Mensuales',
     budgetSubtitle: 'Establece límites de gasto por categoría y controla vs real',
@@ -337,7 +339,7 @@ const es: Translations = {
     title: 'Análisis Inteligente', subtitle: 'Análisis personalizado de tus finanzas',
     loading: 'Analizando tus finanzas…',
     noInsights: 'Sin análisis aún',
-    noInsightsHint: 'Actualiza tu perfil financiero en el Panel primero.',
+    noInsightsHint: 'Actualiza tu perfil financiero en el Tablero primero.',
     alertLabel: 'Alerta', strengthLabel: 'Fortaleza', tipLabel: 'Consejo',
     alertsSection: 'Alertas', strengthsSection: 'Fortalezas', recommendationsSection: 'Recomendaciones',
   },

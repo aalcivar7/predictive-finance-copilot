@@ -13,6 +13,7 @@ import {
   getTransactions, getMonthSummary, getSpendingTrends,
   getNetWorthHistory,
 } from '@/lib/api';
+import { exportDashboardPDF, exportDashboardExcel } from '@/lib/export';
 import type {
   DashboardData, HealthScore, Goal, Budget,
   Transaction, MonthSummary, TrendPoint, NetWorthHistoryOut, User,
@@ -66,6 +67,7 @@ export default function DashboardPage() {
   const [nwHistory, setNwHistory] = useState<NetWorthHistoryOut | null>(null);
   const [editing, setEditing]     = useState(false);
   const [saving, setSaving]       = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [form, setForm]           = useState({
     first_name: '',
     monthly_income: '', monthly_expenses: '', monthly_savings: '',
@@ -115,6 +117,22 @@ export default function DashboardPage() {
     } finally { setSaving(false); }
   }
 
+  function getReportData() {
+    return { user, data: data!, health, goals, budgets, recent, summary };
+  }
+
+  async function handleExportPDF() {
+    if (!data) return;
+    setExporting(true);
+    try { await exportDashboardPDF(getReportData()); } finally { setExporting(false); }
+  }
+
+  async function handleExportExcel() {
+    if (!data) return;
+    setExporting(true);
+    try { await exportDashboardExcel(getReportData()); } finally { setExporting(false); }
+  }
+
   if (!data) return (
     <ProtectedRoute>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#60607a' }}>
@@ -151,10 +169,22 @@ export default function DashboardPage() {
             </h1>
             <p style={{ color: '#9999bb', marginTop: 4, fontSize: 14 }}>{t('dashboard.subtitle')}</p>
           </div>
-          <button onClick={() => setEditing(v => !v)} style={{
-            background: editing ? '#2a2a3a' : '#6366f1', color: editing ? '#9999bb' : '#fff',
-            border: 'none', borderRadius: 10, padding: '10px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-          }}>{editing ? t('dashboard.cancelEdit') : t('dashboard.updateProfile')}</button>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button onClick={handleExportPDF} disabled={exporting} style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '10px 16px', borderRadius: 10,
+              fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              background: 'rgba(244,63,94,0.12)', border: '1px solid rgba(244,63,94,0.3)', color: '#f87171',
+            }}>📄 {t('dashboard.exportReport')} (PDF)</button>
+            <button onClick={handleExportExcel} disabled={exporting} style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '10px 16px', borderRadius: 10,
+              fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', color: '#34d399',
+            }}>📊 {t('dashboard.exportReport')} (Excel)</button>
+            <button onClick={() => setEditing(v => !v)} style={{
+              background: editing ? '#2a2a3a' : '#6366f1', color: editing ? '#9999bb' : '#fff',
+              border: 'none', borderRadius: 10, padding: '10px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            }}>{editing ? t('dashboard.cancelEdit') : t('dashboard.updateProfile')}</button>
+          </div>
         </div>
 
         {/* ── Edit Profile Form ── */}
