@@ -4,22 +4,26 @@ import { Lang, translations } from './translations';
 
 type LangCtx = {
   lang: Lang;
+  langReady: boolean;
   setLang: (l: Lang) => void;
   t: (path: string) => string;
 };
 
 const LangContext = createContext<LangCtx>({
   lang: 'en',
+  langReady: false,
   setLang: () => {},
   t: (p) => p,
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>('en');
+  const [langReady, setLangReady] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('fin-lang') as Lang | null;
     if (saved === 'en' || saved === 'es') setLangState(saved);
+    setLangReady(true);
   }, []);
 
   function setLang(l: Lang) {
@@ -38,7 +42,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <LangContext.Provider value={{ lang, setLang, t }}>
+    <LangContext.Provider value={{ lang, langReady, setLang, t }}>
       {children}
     </LangContext.Provider>
   );
